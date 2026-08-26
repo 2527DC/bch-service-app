@@ -17,7 +17,9 @@ import { INITIAL_PRICES } from "../mock/prices";
 import { INITIAL_ASSEMBLIES } from "../mock/assemblies";
 import { INITIAL_AUDIT } from "../mock/audit";
 import { USERS } from "../mock/users";
-import type { AssemblyLog, AuditEntry, Incentive, Job, PriceItem, User } from "../mock/types";
+import { STAFF } from "../mock/staff";
+import { COURSES, INITIAL_PROGRESS } from "../mock/lms";
+import type { AssemblyLog, AuditEntry, Course, CourseProgress, Incentive, Job, PriceItem, StaffMember, User } from "../mock/types";
 import { getStartOfTodayIST } from "../lib/timezone";
 
 // ── In-memory DB (mutable across the session) ────────────────────────────
@@ -26,6 +28,7 @@ let prices: PriceItem[] = JSON.parse(JSON.stringify(INITIAL_PRICES));
 const assemblies: AssemblyLog[] = INITIAL_ASSEMBLIES;
 let audit: AuditEntry[] = JSON.parse(JSON.stringify(INITIAL_AUDIT));
 let priceSeq = 1000;
+const progress: CourseProgress[] = JSON.parse(JSON.stringify(INITIAL_PROGRESS));
 
 // Injectable failure flag — set true to exercise the red ErrorBanner path.
 export let __forceError = false;
@@ -252,4 +255,70 @@ export async function getAssemblies(): Promise<AssemblyLog[]> {
 export async function getAudit(): Promise<AuditEntry[]> {
   await simulate();
   return [...audit];
+}
+
+// ── Staff ─────────────────────────────────────────────────────────────────
+export async function getStaff(): Promise<StaffMember[]> {
+  await simulate();
+  return [...STAFF];
+}
+
+// Live workload per staff member, derived from the job table.
+export async function getStaffWorkload(): Promise<Record<string, { open: number; deliveredToday: number }>> {
+  await simulate();
+  const startOfToday = getStartOfTodayIST();
+  const out: Record<string, { open: number; deliveredToday: number }> = {};
+  for (const s of STAFF) {
+    const mine = jobs.filter((j) => j.mechanic?.id === s.id);
+    out[s.id] = {
+      open: mine.filter((j) => j.status !== "DELIVERED").length,
+      deliveredToday: mine.filter(
+        (j) => j.status === "DELIVERED" && j.deliveredAt && new Date(j.deliveredAt) >= startOfToday
+      ).length,
+    };
+  }
+  return out;
+}
+
+// ── LMS ───────────────────────────────────────────────────────────────────
+export async function getCourses(): Promise<Course[]> {
+  await simulate();
+  return JSON.parse(JSON.stringify(COURSES));
+}
+
+export async function getProgress(userId: string): Promise<CourseProgress[]> {
+  await simulate();
+  return progress.filter((p) => p.userId === userId).map((p) => ({ ...p, completedLessonIds: [...p.completedLessonIds] }));
+}
+
+// Toggle one lesson's completion; returns the course's fresh progress row.
+export async function toggleLesson(
+  userId: string,
+  courseId: string,
+  lessonId: string
+): Promise<CourseProgress> {
+  await simulate();
+  let row = progress.find((p) => p.userId === userId && p.courseId === courseId);
+  if (!row) {
+    row = { courseId, userId, completedLessonIds: [] };
+    progress.push(row);
+  }
+  row.completedLessonIds = row.completedLessonIds.includes(lessonId)
+    ? row.completedLessonIds.filter((id) => id !== lessonId)
+    : [...row.completedLessonIds, lessonId];
+  return { ...row, completedLessonIds: [...row.completedLessonIds] };
+}
+
+// Team-wide completion % per course — the manager/supervisor view.
+export async function getTeamCourseStats(): Promise<Record<string, { completed: number; started: number }>> {
+  await simulate();
+  const out: Record<string, { completed: number; started: number }> = {};
+  for (const c of COURSES) {
+    const rows = progress.filter((p) => p.courseId === c.id && p.completedLessonIds.length > 0);
+    out[c.id] = {
+      completed: rows.filter((p) => p.completedLessonIds.length >= c.lessons.length).length,
+      started: rows.length,
+    };
+  }
+  return out;
 }

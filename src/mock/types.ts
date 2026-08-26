@@ -1,6 +1,6 @@
 // Shapes mirror the Prisma models of the PWA so screen code is byte-for-byte comparable.
 
-export type User = { id: string; name: string; emoji: string; role: string };
+export type User = { id: string; name: string; emoji: string; role: string; email: string };
 
 export type Review = { rating: number; googleReview: boolean };
 
@@ -69,4 +69,40 @@ export type AuditEntry = {
   userName: string;
   userRole: string;
   createdAt: string;
+};
+
+// ── Staff module ──────────────────────────────────────────────────────────
+export type StaffMember = User & {
+  phone: string;
+  joinedAt: string;
+  shift: "MORNING" | "EVENING" | "FULL";
+  skills: string[];
+  active: boolean;
+};
+
+// ── LMS module ────────────────────────────────────────────────────────────
+export type Lesson = {
+  id: string;
+  title: string;
+  durationMins: number;
+  kind: "VIDEO" | "READING" | "PRACTICAL";
+  summary: string;
+};
+
+export type Course = {
+  id: string;
+  title: string;
+  description: string;
+  category: "SAFETY" | "REPAIR" | "SERVICE" | "CUSTOMER";
+  level: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  emoji: string;
+  lessons: Lesson[];
+  requiredFor: string[]; // roles this course is mandatory for
+};
+
+// Per-user progress: which lesson ids are done.
+export type CourseProgress = {
+  courseId: string;
+  userId: string;
+  completedLessonIds: string[];
 };

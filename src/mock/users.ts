@@ -6,4 +6,6 @@ export const USERS: User[] = MECHANICS.map((m, i) => ({
   name: m.name,
   emoji: m.emoji,
   role: m.role,
+  // Work email — derived from the roster name (mirrors the PWA's user@domain scheme)
+  email: `${m.name.toLowerCase()}@bharathcyclehub.com`,
 }));

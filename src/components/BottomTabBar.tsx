@@ -1,74 +1,51 @@
-// Role-based bottom nav + the 5th hard-refresh 🔄 tab — port of BottomNav.tsx.
-// The 🔄 tab never navigates: it fires store.refresh() + haptic + toast.
+// Role-based bottom tabs. Ionicons outline→filled on active (AGENTS.md §5),
+// brand-tinted, with a 2px indicator above the active tab.
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Haptics from "expo-haptics";
-import { useData } from "../store/data";
-
-type NavItem = { href: string; emoji: string; label: string };
-
-const NAV_ITEMS: Record<string, NavItem[]> = {
-  MECHANIC: [
-    { href: "/mechanic", emoji: "📋", label: "My Jobs" },
-    { href: "/assembly", emoji: "📦", label: "Assembly" },
-    { href: "/counter", emoji: "📥", label: "New" },
-  ],
-  SUPERVISOR: [
-    { href: "/supervisor", emoji: "📋", label: "Jobs" },
-    { href: "/supervisor", emoji: "👥", label: "Assign" },
-    { href: "/counter", emoji: "📥", label: "New" },
-  ],
-  MANAGER: [
-    { href: "/manager", emoji: "📊", label: "Home" },
-    { href: "/supervisor", emoji: "📋", label: "Jobs" },
-    { href: "/history", emoji: "📚", label: "History" },
-    { href: "/prices", emoji: "💰", label: "Prices" },
-  ],
-};
+import { Ionicons } from "@expo/vector-icons";
+import { tabsForRole } from "../lib/nav";
+import { ACTIVE_TINT, INACTIVE_TINT } from "../lib/theme";
 
 export default function BottomTabBar({ role }: { role: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const refresh = useData((s) => s.refresh);
-  const showToast = useData((s) => s.showToast);
   const insets = useSafeAreaInsets();
 
-  const items = NAV_ITEMS[role] || NAV_ITEMS.MECHANIC;
-
-  const handleRefresh = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    await refresh();
-    showToast("🔄 Refreshed");
-  };
+  const items = tabsForRole(role);
 
   return (
-    <View
-      className="bg-white border-t border-gray-200"
-      style={{ paddingBottom: insets.bottom }}
-    >
-      <View className="flex-row justify-around items-center h-16">
-        {items.map((item, idx) => {
-          const active = pathname === item.href;
+    <View className="bg-white border-t border-gray-200" style={{ paddingBottom: insets.bottom }}>
+      <View className="flex-row justify-around items-stretch h-16">
+        {items.map((item) => {
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Pressable
-              key={`${item.href}-${idx}`}
+              key={item.href}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={item.label}
               onPress={() => router.navigate(item.href as never)}
-              className="flex-1 items-center justify-center py-2 min-h-[56px]"
+              className="flex-1 items-center justify-center min-h-[56px]"
             >
-              <Text className="text-2xl">{item.emoji}</Text>
-              <Text className={`text-xs font-medium mt-0.5 ${active ? "text-gray-800" : "text-gray-400"}`}>
+              {/* Active indicator sits flush with the top border */}
+              <View
+                className={`absolute top-0 h-0.5 w-10 rounded-full ${active ? "bg-brand-600" : "bg-transparent"}`}
+              />
+              <Ionicons
+                name={active ? item.icon : item.iconOutline}
+                size={23}
+                color={active ? ACTIVE_TINT : INACTIVE_TINT}
+              />
+              <Text
+                className={`text-[11px] mt-1 ${active ? "text-brand-600 font-semibold" : "text-gray-400 font-medium"}`}
+              >
                 {item.label}
               </Text>
             </Pressable>
           );
         })}
-        {/* Hard refresh — never navigates */}
-        <Pressable onPress={handleRefresh} className="flex-1 items-center justify-center py-2 min-h-[56px]">
-          <Text className="text-2xl">🔄</Text>
-          <Text className="text-xs font-medium mt-0.5 text-gray-400">Refresh</Text>
-        </Pressable>
       </View>
     </View>
   );

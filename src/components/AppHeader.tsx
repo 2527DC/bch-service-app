@@ -1,40 +1,37 @@
-// Sticky header: user emoji/name/role + "🚲 BCH". Long-press the identity to switch user.
+// Sticky header: hamburger → drawer, identity, brand mark.
 import React from "react";
-import { Alert, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useSession } from "../store/session";
+import { useUi } from "../store/ui";
+import { NEUTRAL } from "../lib/theme";
 
 export default function AppHeader() {
   const user = useSession((s) => s.user);
-  const logout = useSession((s) => s.logout);
-  const router = useRouter();
+  const openDrawer = useUi((s) => s.openDrawer);
 
   if (!user) return null;
 
-  const handleSwitchUser = () => {
-    Alert.alert("Switch user?", "You will be logged out.", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Switch",
-        style: "destructive",
-        onPress: async () => {
-          await logout();
-          router.replace("/login");
-        },
-      },
-    ]);
-  };
-
   return (
-    <View className="bg-white border-b border-gray-100 px-4 py-3 flex-row items-center justify-between">
-      <Pressable onLongPress={handleSwitchUser} delayLongPress={1500} className="flex-row items-center gap-2">
-        <Text className="text-2xl">{user.emoji}</Text>
-        <View>
-          <Text className="font-bold text-gray-800 text-lg leading-tight">{user.name}</Text>
+    <View className="bg-white border-b border-gray-100 px-2 py-2 flex-row items-center justify-between">
+      <View className="flex-row items-center gap-1 flex-1">
+        <Pressable
+          onPress={openDrawer}
+          accessibilityRole="button"
+          accessibilityLabel="Open menu"
+          hitSlop={8}
+          className="w-11 h-11 items-center justify-center rounded-full active:bg-gray-100"
+        >
+          <Ionicons name="menu" size={24} color={NEUTRAL[800]} />
+        </Pressable>
+        <View className="flex-1">
+          <Text className="font-bold text-gray-800 text-base leading-tight" numberOfLines={1}>
+            {user.name}
+          </Text>
           <Text className="text-gray-400 text-xs">{user.role}</Text>
         </View>
-      </Pressable>
-      <Text className="text-lg font-bold text-gray-700">🚲 BCH</Text>
+      </View>
+      <Text className="text-base font-bold text-gray-700 pr-2">🚲 BCH</Text>
     </View>
   );
 }
