@@ -1,259 +1,253 @@
-// LMS — training courses with per-user progress. Managers/supervisors also
-// see team-wide completion on each card.
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
-import { ChevronRight, GraduationCap, Users } from "lucide-react-native";
-import * as mockApi from "@/services/mockApi";
-import type { Course, CourseProgress } from "@/mock/types";
+// Staff Academy LMS Dashboard — Mobile Native Experience
+import React, { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
+import {
+  Award,
+  BookOpen,
+  ChevronRight,
+  Flame,
+  Lightbulb,
+  MessageSquare,
+  Play,
+  Sparkles,
+  Trophy,
+  Wrench,
+  Zap,
+} from "lucide-react-native";
 import { useSession } from "@/store/session";
-import { BRAND, NEUTRAL } from "@/lib/theme";
-import SearchBar from "@/components/SearchBar";
-import EmptyState from "@/components/EmptyState";
-import ErrorBanner from "@/components/ErrorBanner";
-import BouncingEmoji from "@/components/BouncingEmoji";
+import { useLms } from "@/store/lms";
 import PressScale from "@/components/PressScale";
+import { BRAND } from "@/lib/theme";
 
-type TeamStats = Record<string, { completed: number; started: number }>;
-
-const CATEGORY_LABEL: Record<Course["category"], string> = {
-  SAFETY: "Safety",
-  REPAIR: "Repair",
-  SERVICE: "Service",
-  CUSTOMER: "Customer",
-};
-
-const LEVEL_STYLE: Record<Course["level"], string> = {
-  BEGINNER: "bg-green-50 text-green-700",
-  INTERMEDIATE: "bg-amber-50 text-amber-700",
-  ADVANCED: "bg-red-50 text-red-700",
-};
-
-const FILTERS = ["ALL", "REQUIRED", "IN_PROGRESS", "DONE"] as const;
-const FILTER_LABEL: Record<(typeof FILTERS)[number], string> = {
-  ALL: "All",
-  REQUIRED: "Required",
-  IN_PROGRESS: "In progress",
-  DONE: "Completed",
-};
-
-export default function LmsScreen() {
-  const user = useSession((s) => s.user);
+export default function LmsDashboardScreen() {
   const router = useRouter();
-
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [progress, setProgress] = useState<CourseProgress[]>([]);
-  const [teamStats, setTeamStats] = useState<TeamStats>({});
-  const [loading, setLoading] = useState(true);
+  const user = useSession((s) => s.user);
+  const profile = useLms((s) => s.profile);
+  const dashboard = useLms((s) => s.dashboard);
+  const fetchProfile = useLms((s) => s.fetchProfile);
+  const fetchDashboard = useLms((s) => s.fetchDashboard);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("ALL");
 
-  const isLead = user?.role === "MANAGER" || user?.role === "SUPERVISOR";
-
-  const load = useCallback(async () => {
-    if (!user) return;
-    try {
-      const [c, p, t] = await Promise.all([
-        mockApi.getCourses(),
-        mockApi.getProgress(user.id),
-        isLead ? mockApi.getTeamCourseStats() : Promise.resolve({} as TeamStats),
-      ]);
-      setCourses(c);
-      setProgress(p);
-      setTeamStats(t);
-      setError(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load courses");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [user, isLead]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  // Progress changes on the detail screen — re-pull when we come back.
-  useFocusEffect(
-    useCallback(() => {
-      if (!loading && user) mockApi.getProgress(user.id).then(setProgress).catch(() => {});
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user])
-  );
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    load();
+  const loadData = async () => {
+    await Promise.all([fetchProfile(), fetchDashboard()]);
   };
 
-  const doneCount = useCallback(
-    (c: Course) => progress.find((p) => p.courseId === c.id)?.completedLessonIds.length ?? 0,
-    [progress]
-  );
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return courses.filter((c) => {
-      const done = doneCount(c);
-      if (filter === "REQUIRED" && !(user && c.requiredFor.includes(user.role))) return false;
-      if (filter === "IN_PROGRESS" && !(done > 0 && done < c.lessons.length)) return false;
-      if (filter === "DONE" && done < c.lessons.length) return false;
-      if (!q) return true;
-      return c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
-    });
-  }, [courses, search, filter, doneCount, user]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    await loadData();
+    setRefreshing(false);
+  };
 
-  // Headline: how much of your required training is finished.
-  const requiredSummary = useMemo(() => {
-    if (!user) return { done: 0, total: 0 };
-    const req = courses.filter((c) => c.requiredFor.includes(user.role));
-    return {
-      done: req.filter((c) => doneCount(c) >= c.lessons.length).length,
-      total: req.length,
-    };
-  }, [courses, user, doneCount]);
+  const navTo = (path: string) => {
+    Haptics.selectionAsync().catch(() => {});
+    router.push(path as never);
+  };
 
-  if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-gray-50">
-        <BouncingEmoji emoji="🎓" size={48} caption="Loading courses..." />
-      </View>
-    );
-  }
+  const xp = profile?.progress.xp ?? dashboard?.metrics.totalXp ?? 240;
+  const streak = profile?.progress.streakDays ?? dashboard?.metrics.streakDays ?? 5;
+  const level = profile?.progress.level ?? 2;
+  const levelTitle = profile?.progress.title ?? "Technician Apprentice";
+  const fraction = profile?.progress.fraction ?? 0.75;
+  const needed = profile?.progress.needed ?? 60;
 
   return (
-    <View className="flex-1 bg-gray-50">
-      {error && <ErrorBanner message={error} onDismiss={() => setError(null)} />}
+    <ScrollView
+      className="flex-1 bg-gray-50"
+      contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {/* ── 1. Learner XP & Streak Hero Card ──────────────────────────────── */}
+      <View className="rounded-3xl overflow-hidden mb-5 shadow-lg bg-gray-900">
+        <LinearGradient
+          colors={["#1e293b", "#0f172a"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="p-5"
+        >
+          {/* Top Row: User Level & Streak */}
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center gap-2.5">
+              <View className="w-10 h-10 rounded-full bg-brand-600/30 border border-brand-500/40 items-center justify-center">
+                <Text className="text-xl">🎓</Text>
+              </View>
+              <View>
+                <Text className="text-white font-bold text-base">{user?.name ?? "Staff Member"}</Text>
+                <View className="flex-row items-center gap-1.5 mt-0.5">
+                  <View className="px-2 py-0.5 rounded-full bg-brand-500/20 border border-brand-400/30">
+                    <Text className="text-brand-300 text-[11px] font-semibold">Level {level} · {levelTitle}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
 
-      <View className="bg-white px-4 pt-3 pb-2 border-b border-gray-100">
-        {/* Required-training summary */}
-        <View className="flex-row items-center gap-3 bg-brand-50 rounded-2xl p-3.5 mb-3">
-          <GraduationCap size={22} color={BRAND[600]} />
+            {/* Streak Badge */}
+            <View className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/20 border border-amber-500/30">
+              <Flame size={18} color="#f59e0b" />
+              <Text className="text-amber-400 font-bold text-sm">{streak} Day Streak</Text>
+            </View>
+          </View>
+
+          {/* XP Progress Bar */}
+          <View className="bg-white/10 p-3.5 rounded-2xl border border-white/10">
+            <View className="flex-row justify-between items-center mb-2">
+              <View className="flex-row items-center gap-1.5">
+                <Zap size={15} color="#3b82f6" />
+                <Text className="text-gray-300 text-xs font-semibold">XP Progress</Text>
+              </View>
+              <Text className="text-white text-xs font-bold">{xp} XP <Text className="text-gray-400 font-normal">({needed} to Lv {level + 1})</Text></Text>
+            </View>
+
+            <View className="h-2.5 bg-gray-800 rounded-full overflow-hidden">
+              <View
+                className="h-full bg-brand-500 rounded-full"
+                style={{ width: `${Math.min(Math.max(fraction * 100, 8), 100)}%` }}
+              />
+            </View>
+          </View>
+        </LinearGradient>
+      </View>
+
+      {/* ── 2. Jump Back In / Quick Hero Action ───────────────────────────── */}
+      <PressScale
+        scaleTo={0.98}
+        onPress={() => navTo("/lms/learn")}
+        className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-5 flex-row items-center justify-between"
+      >
+        <View className="flex-row items-center gap-3.5 flex-1">
+          <View className="w-12 h-12 rounded-2xl bg-emerald-50 items-center justify-center border border-emerald-100">
+            <Play size={22} color="#059669" fill="#059669" />
+          </View>
           <View className="flex-1">
-            <Text className="text-brand-700 font-bold text-[15px]">
-              {requiredSummary.done} of {requiredSummary.total} required courses done
+            <View className="flex-row items-center gap-2">
+              <Text className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Resume Lesson</Text>
+              <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            </View>
+            <Text className="text-gray-900 font-bold text-base mt-0.5" numberOfLines={1}>
+              Hydraulic Brake Bleed & Indexing
             </Text>
-            <Text className="text-brand-600/70 text-xs mt-0.5">
-              {requiredSummary.done === requiredSummary.total
-                ? "You are fully certified."
-                : "Finish these to stay certified."}
-            </Text>
+            <Text className="text-gray-500 text-xs mt-0.5">Level 2 · 8 mins left</Text>
           </View>
         </View>
+        <ChevronRight size={20} color="#9ca3af" />
+      </PressScale>
 
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Search courses" withIcon />
+      {/* ── 3. Four Core Feature Grid (2x2) ──────────────────────────────── */}
+      <Text className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 px-1">
+        Academy Modules
+      </Text>
 
-        <View className="flex-row gap-2 mt-3">
-          {FILTERS.map((f) => {
-            const active = filter === f;
-            return (
-              <PressScale
-                key={f}
-                scaleTo={0.96}
-                onPress={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-full ${active ? "bg-brand-600" : "bg-gray-100"}`}
-              >
-                <Text className={`text-xs font-semibold ${active ? "text-white" : "text-gray-600"}`}>
-                  {FILTER_LABEL[f]}
-                </Text>
-              </PressScale>
-            );
-          })}
+      <View className="flex-row flex-wrap -mx-1.5 mb-5">
+        {/* Tile 1: Learning Pathway */}
+        <View className="w-1/2 p-1.5">
+          <PressScale
+            scaleTo={0.96}
+            onPress={() => navTo("/lms/learn")}
+            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+          >
+            <View className="w-11 h-11 rounded-2xl bg-blue-50 items-center justify-center border border-blue-100">
+              <BookOpen size={22} color="#2563eb" />
+            </View>
+            <View>
+              <Text className="text-gray-900 font-bold text-base">Learning Tree</Text>
+              <Text className="text-gray-500 text-xs mt-0.5">Courses & Quizzes</Text>
+            </View>
+          </PressScale>
+        </View>
+
+        {/* Tile 2: Roleplay Practice */}
+        <View className="w-1/2 p-1.5">
+          <PressScale
+            scaleTo={0.96}
+            onPress={() => navTo("/lms/practice")}
+            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+          >
+            <View className="w-11 h-11 rounded-2xl bg-purple-50 items-center justify-center border border-purple-100">
+              <MessageSquare size={22} color="#9333ea" />
+            </View>
+            <View>
+              <Text className="text-gray-900 font-bold text-base">Roleplay Chat</Text>
+              <Text className="text-gray-500 text-xs mt-0.5">Customer Scenarios</Text>
+            </View>
+          </PressScale>
+        </View>
+
+        {/* Tile 3: Bike Specs Pocket Guide */}
+        <View className="w-1/2 p-1.5">
+          <PressScale
+            scaleTo={0.96}
+            onPress={() => navTo("/lms/products")}
+            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+          >
+            <View className="w-11 h-11 rounded-2xl bg-amber-50 items-center justify-center border border-amber-100">
+              <Wrench size={22} color="#d97706" />
+            </View>
+            <View>
+              <Text className="text-gray-900 font-bold text-base">Bike Specs</Text>
+              <Text className="text-gray-500 text-xs mt-0.5">Models & Objections</Text>
+            </View>
+          </PressScale>
+        </View>
+
+        {/* Tile 4: Store Leaderboard */}
+        <View className="w-1/2 p-1.5">
+          <PressScale
+            scaleTo={0.96}
+            onPress={() => navTo("/lms/rank")}
+            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+          >
+            <View className="w-11 h-11 rounded-2xl bg-rose-50 items-center justify-center border border-rose-100">
+              <Trophy size={22} color="#e11d48" />
+            </View>
+            <View>
+              <Text className="text-gray-900 font-bold text-base">Leaderboard</Text>
+              <Text className="text-gray-500 text-xs mt-0.5">Shop Ranks & XP</Text>
+            </View>
+          </PressScale>
         </View>
       </View>
 
-      <FlatList
-        data={filtered}
-        keyExtractor={(c) => c.id}
-        contentContainerStyle={{ padding: 12, paddingBottom: 24, gap: 10 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={BRAND[600]} />}
-        ListEmptyComponent={<EmptyState emoji="📭" message="No courses match" />}
-        renderItem={({ item }) => {
-          const done = doneCount(item);
-          const pct = Math.round((done / item.lessons.length) * 100);
-          const isRequired = !!user && item.requiredFor.includes(user.role);
-          const stats = teamStats[item.id];
+      {/* ── 4. Daily Workshop Tip ────────────────────────────────────────── */}
+      {dashboard?.dailyTip && (
+        <View className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5">
+          <View className="flex-row items-center gap-2 mb-1.5">
+            <Lightbulb size={18} color="#d97706" />
+            <Text className="text-amber-800 font-bold text-sm">{dashboard.dailyTip.title}</Text>
+          </View>
+          <Text className="text-amber-900 text-xs leading-relaxed">
+            {dashboard.dailyTip.content}
+          </Text>
+        </View>
+      )}
 
-          return (
-            <PressScale
-              scaleTo={0.98}
-              onPress={() => router.push(`/lms/${item.id}` as never)}
-              className="bg-white rounded-2xl border border-gray-100 p-4 min-h-[56px]"
-            >
-              <View className="flex-row items-start gap-3">
-                <Text className="text-3xl">{item.emoji}</Text>
-
-                <View className="flex-1">
-                  <View className="flex-row items-center gap-2">
-                    <Text className="font-bold text-gray-900 text-base flex-1 leading-tight" numberOfLines={2}>
-                      {item.title}
-                    </Text>
-                    {pct === 100 && (
-                      <View className="px-2 py-0.5 rounded-full bg-green-50">
-                        <Text className="text-green-700 text-[10px] font-bold">DONE</Text>
-                      </View>
-                    )}
+      {/* ── 5. Announcements Feed ───────────────────────────────────────── */}
+      {dashboard?.announcements && dashboard.announcements.length > 0 && (
+        <View className="mb-2">
+          <Text className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 px-1">
+            Store Bulletins
+          </Text>
+          {dashboard.announcements.map((ann) => (
+            <View key={ann.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-2.5">
+              <View className="flex-row items-center justify-between mb-1">
+                <Text className="text-gray-900 font-bold text-sm">{ann.title}</Text>
+                {ann.priority === "HIGH" || ann.priority === "URGENT" ? (
+                  <View className="px-2 py-0.5 rounded-md bg-red-100">
+                    <Text className="text-red-700 text-[10px] font-bold">URGENT</Text>
                   </View>
-
-                  <Text className="text-gray-500 text-xs mt-1 leading-snug" numberOfLines={2}>
-                    {item.description}
-                  </Text>
-
-                  <View className="flex-row items-center gap-1.5 mt-2">
-                    <View className="px-2 py-0.5 rounded-full bg-gray-100">
-                      <Text className="text-gray-600 text-[10px] font-semibold">
-                        {CATEGORY_LABEL[item.category]}
-                      </Text>
-                    </View>
-                    <View className={`px-2 py-0.5 rounded-full ${LEVEL_STYLE[item.level].split(" ")[0]}`}>
-                      <Text className={`text-[10px] font-semibold ${LEVEL_STYLE[item.level].split(" ")[1]}`}>
-                        {item.level}
-                      </Text>
-                    </View>
-                    {isRequired && (
-                      <View className="px-2 py-0.5 rounded-full bg-brand-50">
-                        <Text className="text-brand-700 text-[10px] font-semibold">REQUIRED</Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-
-                <ChevronRight size={18} color={NEUTRAL[400]} />
+                ) : null}
               </View>
-
-              {/* Progress */}
-              <View className="mt-3">
-                <View className="flex-row items-center justify-between mb-1.5">
-                  <Text className="text-[11px] text-gray-400">
-                    {done} / {item.lessons.length} lessons
-                  </Text>
-                  <Text className={`text-[11px] font-bold ${pct === 100 ? "text-green-600" : "text-gray-500"}`}>
-                    {pct}%
-                  </Text>
-                </View>
-                <View className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <View
-                    className={`h-full rounded-full ${pct === 100 ? "bg-green-500" : "bg-brand-600"}`}
-                    style={{ width: `${pct}%` }}
-                  />
-                </View>
-              </View>
-
-              {isLead && stats && (
-                <View className="flex-row items-center gap-1.5 mt-2.5 pt-2.5 border-t border-gray-50">
-                  <Users size={13} color={NEUTRAL[400]} />
-                  <Text className="text-gray-500 text-xs">
-                    Team: {stats.completed} completed · {stats.started} started
-                  </Text>
-                </View>
-              )}
-            </PressScale>
-          );
-        }}
-      />
-    </View>
+              <Text className="text-gray-600 text-xs leading-relaxed">{ann.content}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
