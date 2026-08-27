@@ -2,8 +2,10 @@
 import React from "react";
 import { Pressable, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+cssInterop(AnimatedPressable, { className: "style" });
 
 type Props = PressableProps & {
   scaleTo?: number;
@@ -33,3 +35,5 @@ export default function PressScale({ scaleTo = 0.95, style, children, ...rest }:
     </AnimatedPressable>
   );
 }
+
+cssInterop(PressScale, { className: "style" });

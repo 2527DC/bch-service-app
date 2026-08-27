@@ -21,10 +21,8 @@ export default function RootLayout() {
   }, [hydrate]);
 
   useEffect(() => {
-    if (hydrated) SplashScreen.hideAsync();
+    if (hydrated) SplashScreen.hideAsync().catch(() => {});
   }, [hydrated]);
-
-  if (!hydrated) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

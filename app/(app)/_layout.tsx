@@ -35,7 +35,14 @@ export default function AppLayout() {
     if (user) refresh();
   }, [user, refresh]);
 
-  if (!hydrated) return null;
+  if (!hydrated) {
+    return (
+      <View className="flex-1 bg-white items-center justify-center">
+        <BouncingEmoji emoji="🚲" size={56} caption="Starting up..." />
+      </View>
+    );
+  }
+
   if (!user) return <Redirect href="/login" />;
 
   if (loading) {

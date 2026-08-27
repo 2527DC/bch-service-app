@@ -1,17 +1,28 @@
-// Login — port of src/app/login/page.tsx: user picker → 4-digit PIN pad → role redirect.
+// Login — Professional Access Code Authentication
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
-import { ChevronRight, Delete } from "lucide-react-native";
+import {
+  AlertCircle,
+  ArrowRight,
+  Bike,
+  KeyRound,
+  LogIn,
+  ShieldCheck,
+  XCircle,
+} from "lucide-react-native";
 import { useSession } from "@/store/session";
-import * as mockApi from "@/services/mockApi";
-import { LOGIN_BG } from "@/mock/photos";
-import BouncingEmoji from "@/components/BouncingEmoji";
-import type { User } from "@/mock/types";
 
 const ROLE_REDIRECT: Record<string, string> = {
   MECHANIC: "/mechanic",
@@ -19,223 +30,220 @@ const ROLE_REDIRECT: Record<string, string> = {
   MANAGER: "/manager",
 };
 
+const SUGGESTED_CODES = [
+  { code: "ADMIN123", label: "Admin" },
+  { code: "BCH-MECH-01", label: "Mechanic" },
+  { code: "BCH-SUP-01", label: "Supervisor" },
+];
+
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const sessionUser = useSession((s) => s.user);
   const rememberedUser = useSession((s) => s.rememberedUser);
-  const doStoreLogin = useSession((s) => s.login);
+  const loginWithCode = useSession((s) => s.loginWithCode);
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [showUserPicker, setShowUserPicker] = useState(false);
-  const [pin, setPin] = useState("");
+  const [accessCode, setAccessCode] = useState(rememberedUser || "ADMIN123");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Existing session → straight to home
+  // Existing session → navigate straight to dashboard
   useEffect(() => {
     if (sessionUser) {
       router.replace((ROLE_REDIRECT[sessionUser.role] || "/mechanic") as never);
     }
   }, [sessionUser, router]);
 
-  // Remembered user pre-selected
-  useEffect(() => {
-    if (rememberedUser && !selectedUser) setSelectedUser(rememberedUser);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rememberedUser]);
-
-  useEffect(() => {
-    mockApi.listUsers().then(setUsers).catch(() => {});
-  }, []);
-
-  const doLogin = async (name: string, pinCode: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      const user = await doStoreLogin(name, pinCode);
-      router.replace((ROLE_REDIRECT[user.role] || "/mechanic") as never);
-    } catch (e: any) {
-      setError(e?.message === "Wrong PIN" ? "Wrong PIN" : e?.message || "Connection error");
-      setPin("");
-    }
-    setLoading(false);
-  };
-
-  const handleKey = (key: string) => {
-    if (loading) return;
-    Haptics.selectionAsync().catch(() => {});
-    setError("");
-    if (key === "del") {
-      setPin((p) => p.slice(0, -1));
+  const handleLogin = async (codeToUse?: string) => {
+    const code = (codeToUse || accessCode).trim().toUpperCase();
+    if (!code) {
+      setError("Please enter your staff access code");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
       return;
     }
-    setPin((p) => {
-      if (p.length >= 4) return p;
-      const next = p + key;
-      if (next.length === 4 && selectedUser) {
-        // Submit once the 4th digit lands
-        setTimeout(() => doLogin(selectedUser, next), 120);
-      }
-      return next;
-    });
-  };
 
-  const pickUser = (name: string) => {
-    setSelectedUser(name);
-    setShowUserPicker(false);
-    setPin("");
+    setLoading(true);
     setError("");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+
+    try {
+      console.log(`[Login] Sending mobile-login request for code: ${code}`);
+      const user = await loginWithCode(code);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      router.replace((ROLE_REDIRECT[user.role] || "/mechanic") as never);
+    } catch (e: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      setError(e?.message || "Invalid Access Code or server unreachable");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const currentUser = users.find((u) => u.name === selectedUser);
-
-  const userRow = (u: User, showCurrent: boolean) => (
-    <Pressable
-      key={u.name}
-      onPress={() => pickUser(u.name)}
-      className={`w-full flex-row items-center gap-3 p-3 rounded-xl active:bg-gray-100 ${
-        showCurrent && u.name === selectedUser ? "bg-gray-100" : ""
-      }`}
-    >
-      <View className="w-10 h-10 rounded-full bg-gray-800 items-center justify-center">
-        <Text className="text-lg">{u.emoji}</Text>
-      </View>
-      <View className="flex-1">
-        <Text className="font-semibold text-gray-800">{u.name}</Text>
-        <Text className="text-xs text-gray-400">{u.role.charAt(0) + u.role.slice(1).toLowerCase()}</Text>
-      </View>
-      {showCurrent && u.name === selectedUser ? (
-        <Text className="text-green-500 text-sm font-bold">Current</Text>
-      ) : (
-        <ChevronRight size={20} color="#d1d5db" />
-      )}
-    </Pressable>
-  );
 
   return (
-    <View className="flex-1 bg-gray-900">
-      {/* Background image + dark gradient overlay */}
-      <Image source={LOGIN_BG} style={{ position: "absolute", width: "100%", height: "100%" }} contentFit="cover" />
-      <LinearGradient
-        colors={["rgba(0,0,0,0.6)", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.8)"]}
-        style={{ position: "absolute", width: "100%", height: "100%" }}
-      />
-
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 bg-slate-50"
+    >
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: "center",
           paddingHorizontal: 24,
-          paddingTop: insets.top + 32,
-          paddingBottom: 16,
+          paddingTop: insets.top + 24,
+          paddingBottom: insets.bottom + 24,
         }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        {/* Brand */}
-        <View className="mb-6 items-center">
-          <View className="w-16 h-16 bg-white/20 rounded-2xl items-center justify-center mb-3 border border-white/25">
-            <Text className="text-3xl">🚲</Text>
+        {/* ── Brand Header ────────────────────────────────────────────────── */}
+        <View className="items-center mb-7">
+          <View className="w-18 h-18 rounded-3xl bg-brand-600 items-center justify-center mb-3.5 shadow-lg shadow-brand-500/25 p-4 border-2 border-brand-400/30">
+            <Bike size={36} color="#ffffff" strokeWidth={2.2} />
           </View>
-          <Text className="text-3xl font-bold text-white tracking-tight">Bharath Cycle Hub</Text>
-          <Text className="text-white/60 text-sm mt-1">Service Management System</Text>
+
+          <Text className="text-2xl font-black text-slate-900 tracking-tight text-center">
+            Bharath Cycle Hub
+          </Text>
+          <View className="flex-row items-center gap-1.5 mt-1">
+            <View className="w-2 h-2 rounded-full bg-emerald-500" />
+            <Text className="text-slate-500 text-xs font-semibold tracking-wide">
+              Service Operations & Staff Academy
+            </Text>
+          </View>
         </View>
 
-        {/* Login card */}
-        <View className="bg-white rounded-3xl p-6 w-full max-w-sm self-center shadow-2xl">
-          {!selectedUser ? (
-            <>
-              <Text className="text-lg font-bold text-gray-800 mb-4 text-center">Select your name</Text>
-              <View style={{ maxHeight: 380 }}>
-                <ScrollView>{users.map((u) => userRow(u, false))}</ScrollView>
+        {/* ── Main Login Card ─────────────────────────────────────────────── */}
+        <View className="bg-white rounded-3xl p-7 w-full max-w-sm self-center shadow-xl border border-slate-100">
+          <View className="mb-5">
+            <Text className="text-lg font-bold text-slate-900">Sign In to Workspace</Text>
+            <Text className="text-slate-500 text-xs mt-0.5">
+              Enter your access code and tap Sign In to authenticate.
+            </Text>
+          </View>
+
+          {/* Access Code Input */}
+          <View className="mb-4">
+            <Text className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+              Staff Access Code
+            </Text>
+
+            <View className="relative justify-center">
+              <View className="absolute left-4 z-10">
+                <KeyRound size={20} color="#64748b" />
               </View>
-            </>
-          ) : showUserPicker ? (
-            <>
-              <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-bold text-gray-800">Switch account</Text>
-                <Pressable onPress={() => setShowUserPicker(false)} hitSlop={8}>
-                  <Text className="text-gray-400 text-sm font-medium">Cancel</Text>
+
+              <TextInput
+                value={accessCode}
+                onChangeText={(v) => {
+                  setAccessCode(v);
+                  setError("");
+                }}
+                autoCapitalize="characters"
+                autoCorrect={false}
+                placeholder="e.g. ADMIN123"
+                placeholderTextColor="#94a3b8"
+                returnKeyType="go"
+                onSubmitEditing={() => handleLogin()}
+                className="bg-slate-50 border-2 border-slate-200 focus:border-brand-600 rounded-2xl pl-12 pr-11 py-4 text-base font-bold text-slate-900 tracking-wider"
+              />
+
+              {accessCode.length > 0 && (
+                <Pressable
+                  onPress={() => {
+                    setAccessCode("");
+                    setError("");
+                  }}
+                  className="absolute right-3.5 p-1"
+                  hitSlop={8}
+                >
+                  <XCircle size={18} color="#94a3b8" />
                 </Pressable>
-              </View>
-              <View style={{ maxHeight: 380 }}>
-                <ScrollView>{users.map((u) => userRow(u, true))}</ScrollView>
-              </View>
-            </>
-          ) : (
-            <>
-              {/* Welcome back / PIN entry */}
-              <View className="items-center mb-6">
-                <View className="w-16 h-16 rounded-full bg-gray-800 items-center justify-center mb-3">
-                  <Text className="text-2xl">{currentUser?.emoji || "👤"}</Text>
-                </View>
-                <Text className="text-xl font-bold text-gray-800">
-                  {rememberedUser === selectedUser ? "Welcome back" : "Hello"}, {selectedUser?.split(" ")[0]}
-                </Text>
-                <Pressable onPress={() => { setShowUserPicker(true); setPin(""); setError(""); }} hitSlop={8}>
-                  <Text className="text-blue-500 text-sm font-medium mt-1">Not you? Switch account</Text>
-                </Pressable>
-              </View>
-
-              {/* PIN dots */}
-              <Text className="text-sm font-medium text-gray-500 mb-2 text-center">Enter your 4-digit PIN</Text>
-              <View className="flex-row justify-center gap-3 mb-4">
-                {[0, 1, 2, 3].map((i) => (
-                  <View
-                    key={i}
-                    className={`w-4 h-4 rounded-full ${i < pin.length ? "bg-gray-800 scale-125" : "bg-gray-200"}`}
-                  />
-                ))}
-              </View>
-
-              {error ? (
-                <View className="bg-red-50 py-2 px-4 rounded-xl mb-4">
-                  <Text className="text-red-600 text-sm font-medium text-center">{error}</Text>
-                </View>
-              ) : null}
-
-              {/* Number pad */}
-              <View className="flex-row flex-wrap" style={{ margin: -4 }}>
-                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"].map((key, i) => (
-                  <View key={i} style={{ width: "33.33%", padding: 4 }}>
-                    {key === "" ? (
-                      <View />
-                    ) : (
-                      <Pressable
-                        onPress={() => handleKey(key)}
-                        disabled={loading || (key !== "del" && pin.length >= 4)}
-                        className={`rounded-xl py-4 items-center justify-center min-h-[56px] ${
-                          key === "del" ? "bg-gray-100" : "bg-gray-50 active:bg-gray-200"
-                        } ${loading || (key !== "del" && pin.length >= 4) ? "opacity-40" : ""}`}
-                      >
-                        {key === "del" ? (
-                          <Delete size={22} color="#6b7280" />
-                        ) : (
-                          <Text className="text-gray-800 text-xl font-semibold">{key}</Text>
-                        )}
-                      </Pressable>
-                    )}
-                  </View>
-                ))}
-              </View>
-
-              <Text className="text-center text-xs text-gray-300 mt-3">Demo build — any 4 digits work</Text>
-
-              {loading && (
-                <View className="mt-4 items-center">
-                  <BouncingEmoji emoji="🚲" size={26} mode="pulse" />
-                </View>
               )}
-            </>
-          )}
+            </View>
+          </View>
+
+          {/* Error Message */}
+          {error ? (
+            <View className="bg-red-50 border border-red-200 rounded-2xl p-3.5 flex-row items-center gap-2.5 mb-4">
+              <AlertCircle size={18} color="#dc2626" />
+              <Text className="text-red-700 text-xs font-semibold flex-1 leading-snug">
+                {error}
+              </Text>
+            </View>
+          ) : null}
+
+          {/* ── Primary Sign In Button (Makes API Call) ────────────────────── */}
+          <Pressable
+            disabled={loading}
+            onPress={() => handleLogin()}
+            accessibilityRole="button"
+            accessibilityLabel="Sign In"
+            className={`w-full py-4 rounded-2xl items-center flex-row justify-center gap-2 shadow-md ${
+              loading
+                ? "bg-brand-400"
+                : "bg-brand-600 active:bg-brand-700 active:opacity-90 shadow-brand-500/25"
+            }`}
+          >
+            {loading ? (
+              <View className="flex-row items-center gap-2">
+                <ActivityIndicator color="#ffffff" size="small" />
+                <Text className="text-white font-bold text-base">Authenticating...</Text>
+              </View>
+            ) : (
+              <>
+                <LogIn size={20} color="#ffffff" strokeWidth={2.2} />
+                <Text className="text-white font-bold text-base">Sign In with Code</Text>
+                <ArrowRight size={18} color="#ffffff" strokeWidth={2.2} />
+              </>
+            )}
+          </Pressable>
+
+          {/* Quick Access Code Chips for Convenience */}
+          <View className="mt-6 pt-5 border-t border-slate-100">
+            <Text className="text-[11px] font-bold text-slate-400 mb-2.5 text-center">
+              Quick Select Access Code
+            </Text>
+            <View className="flex-row justify-center gap-2">
+              {SUGGESTED_CODES.map((item) => (
+                <Pressable
+                  key={item.code}
+                  onPress={() => {
+                    Haptics.selectionAsync().catch(() => {});
+                    setAccessCode(item.code);
+                    setError("");
+                  }}
+                  className={`px-3 py-1.5 rounded-xl border ${
+                    accessCode === item.code
+                      ? "bg-brand-50 border-brand-300"
+                      : "bg-slate-50 border-slate-200 active:bg-slate-100"
+                  }`}
+                >
+                  <Text
+                    className={`text-[11px] font-bold ${
+                      accessCode === item.code ? "text-brand-700" : "text-slate-600"
+                    }`}
+                  >
+                    {item.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        {/* ── Footer ──────────────────────────────────────────────────────── */}
+        <View className="items-center mt-7">
+          <View className="flex-row items-center gap-1.5 mb-1">
+            <ShieldCheck size={14} color="#64748b" />
+            <Text className="text-slate-400 text-xs font-medium">
+              Encrypted Session · BCH Backend & RBAC
+            </Text>
+          </View>
+          <Text className="text-slate-300 text-[11px]">
+            Bharath Cycle Hub · Bengaluru Store #1
+          </Text>
         </View>
       </ScrollView>
-
-      {/* Footer */}
-      <View style={{ paddingBottom: insets.bottom + 24 }} className="items-center pt-2">
-        <Text className="text-white/40 text-xs">Bengaluru · Since 2010</Text>
-      </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
