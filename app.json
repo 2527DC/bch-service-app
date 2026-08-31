@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "BCH Service",
-    "slug": "bch-service-expo",
+    "name": "Bharath Cycle Hub",
+    "slug": "bharath-cycle-hub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "bchserviceexpo",
+    "scheme": "bharathcyclehub",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {

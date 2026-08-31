@@ -1,4 +1,4 @@
-# BCH Service App — Agent Rules
+# Bharath Cycle Hub — Agent Rules
 
 ## 0. Before writing any code
 

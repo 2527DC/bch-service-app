@@ -31,7 +31,7 @@ export default function AppHeader() {
           <Text className="text-gray-400 text-xs">{user.role}</Text>
         </View>
       </View>
-      <Text className="text-base font-bold text-gray-700 pr-2">🚲 BCH</Text>
+      <Text className="text-sm font-bold text-gray-700 pr-2 shrink-0">🚲 Bharath Cycle Hub</Text>
     </View>
   );
 }
