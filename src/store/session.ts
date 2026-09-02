@@ -4,6 +4,7 @@ import { apiClient } from "../services/apiClient";
 import * as mockApi from "../services/mockApi";
 import { USERS } from "../mock/users";
 import type { User } from "../mock/types";
+import { allModulesForAccess, grantAllPermissions } from "../lib/modules";
 
 const SESSION_KEY = "bch-session";
 const REMEMBERED_KEY = "bch-user";
@@ -11,10 +12,34 @@ const USER_PROFILE_KEY = "bch-user-profile";
 const PERMISSIONS_KEY = "bch-permissions";
 const MODULES_KEY = "bch-modules";
 
+// ── Demo login ────────────────────────────────────────────────────────────
+// Typing any of these codes (or tapping "Explore Demo") signs in a fully-granted local
+// user WITHOUT touching the network. `loginWithCode` checks this list before it builds an
+// axios request, so no backend call is ever made for a demo session.
+export const DEMO_ACCESS_CODES = ["DEMO", "DEMO123", "BCH-DEMO"] as const;
+export const DEMO_ACCESS_CODE = DEMO_ACCESS_CODES[0];
+
+export function isDemoCode(code: string): boolean {
+  return (DEMO_ACCESS_CODES as readonly string[]).includes(code.trim().toUpperCase());
+}
+
 export interface SessionUser extends User {
   roleKey?: string;
   roleName?: string;
+  /** true only for the offline demo account — never set by a real backend login */
+  isDemo?: boolean;
 }
+
+const DEMO_USER: SessionUser = {
+  id: "demo-admin",
+  name: "Demo Admin",
+  email: "demo@bharathcyclehub.com",
+  emoji: "🧪",
+  role: "MANAGER",
+  roleKey: "ADMIN",
+  roleName: "Administrator (Demo)",
+  isDemo: true,
+};
 
 type SessionState = {
   user: SessionUser | null;
@@ -25,6 +50,7 @@ type SessionState = {
   hydrate: () => Promise<void>;
   login: (name: string, pin: string) => Promise<SessionUser>;
   loginWithCode: (accessCode: string) => Promise<SessionUser>;
+  loginAsDemo: () => Promise<SessionUser>;
   hasPermission: (moduleKey: string, action?: string) => boolean;
   logout: () => Promise<void>;
 };
@@ -62,7 +88,29 @@ export const useSession = create<SessionState>((set, get) => ({
     }
   },
 
+  // Offline. Grants every action on every module in the catalog. Persists under the same
+  // keys a real login uses so `hydrate()` restores it identically on the next launch.
+  loginAsDemo: async () => {
+    const permissions = grantAllPermissions();
+    const modules = allModulesForAccess();
+    const user: SessionUser = { ...DEMO_USER };
+
+    await AsyncStorage.multiSet([
+      [SESSION_KEY, user.name],
+      [REMEMBERED_KEY, DEMO_ACCESS_CODE],
+      [USER_PROFILE_KEY, JSON.stringify(user)],
+      [PERMISSIONS_KEY, JSON.stringify(permissions)],
+      [MODULES_KEY, JSON.stringify(modules)],
+    ]);
+
+    set({ user, rememberedUser: DEMO_ACCESS_CODE, permissions, modules });
+    return user;
+  },
+
   loginWithCode: async (accessCode: string) => {
+    // Demo short-circuit — must come BEFORE apiClient so no request is issued.
+    if (isDemoCode(accessCode)) return get().loginAsDemo();
+
     try {
       const resp = await apiClient.mobileLogin(accessCode);
       const role = (resp.user.roleKey === "ADMIN" || resp.user.roleKey === "STAFF_LMS_ADMIN" || resp.user.roleKey === "MANAGER")

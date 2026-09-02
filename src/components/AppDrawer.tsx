@@ -29,6 +29,9 @@ function DrawerRow({
   active: boolean;
   onPress: () => void;
 }) {
+  // Sub-modules sit indented under their parent with a smaller icon well, the same
+  // parent → children tree the PWA sidebar draws for Stock Management.
+  const child = !!item.child;
   return (
     <Pressable
       onPress={() => {
@@ -37,26 +40,26 @@ function DrawerRow({
       }}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
-      className={`flex-row items-center justify-between mx-2.5 px-3 py-2.5 rounded-2xl mb-1 ${
-        active ? "bg-brand-50 border border-brand-200" : "bg-transparent"
-      }`}
+      className={`flex-row items-center justify-between mx-2.5 px-3 rounded-2xl mb-1 ${
+        child ? "ml-8 py-2" : "py-2.5"
+      } ${active ? "bg-brand-50 border border-brand-200" : "bg-transparent"}`}
     >
       <View className="flex-row items-center gap-3 flex-1 mr-2">
         <View
-          className={`w-9 h-9 rounded-xl items-center justify-center ${
+          className={`rounded-xl items-center justify-center ${child ? "w-7 h-7" : "w-9 h-9"} ${
             active ? "bg-brand-600" : "bg-gray-100"
           }`}
         >
           <Ionicons
             name={active ? item.icon : item.iconOutline}
-            size={19}
+            size={child ? 15 : 19}
             color={active ? "#ffffff" : NEUTRAL[500]}
           />
         </View>
 
         <Text
           numberOfLines={1}
-          className={`text-[14px] flex-1 ${
+          className={`flex-1 ${child ? "text-[13px]" : "text-[14px]"} ${
             active ? "text-brand-700 font-bold" : "text-gray-700 font-medium"
           }`}
         >
@@ -85,13 +88,31 @@ function DrawerRow({
   );
 }
 
+// Role home routes are prefixes of nothing else, but "/stock" IS a prefix of
+// "/stock-management" — so prefix matching has to test for a path *segment*.
+function isActiveRoute(pathname: string, href: string) {
+  if (pathname === href) return true;
+  if (href === "/mechanic" || href === "/supervisor" || href === "/manager") return false;
+  return pathname.startsWith(`${href}/`);
+}
+
 export default function AppDrawer() {
   const user = useSession((s) => s.user);
   const logout = useSession((s) => s.logout);
+  const hasPermission = useSession((s) => s.hasPermission);
+  // Subscribe to the map itself so a re-login with different grants re-renders the menu.
+  const permissions = useSession((s) => s.permissions);
   const closeDrawer = useUi((s) => s.closeDrawer);
   const pathname = usePathname();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  const role = user?.role ?? "MECHANIC";
+  const sections = React.useMemo(
+    () => drawerSectionsForRole(role, (key) => hasPermission(key, "view")),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [role, permissions]
+  );
 
   if (!user) return null;
 
@@ -139,10 +160,17 @@ export default function AppDrawer() {
         </View>
 
         <View className="flex-row items-center justify-between pt-2 border-t border-gray-100">
-          <View className="px-2.5 py-1 rounded-lg bg-brand-50 border border-brand-200">
-            <Text className="text-brand-700 text-[11px] font-bold">
-              {ROLE_LABEL[user.role] ?? user.role}
-            </Text>
+          <View className="flex-row items-center gap-1.5">
+            <View className="px-2.5 py-1 rounded-lg bg-brand-50 border border-brand-200">
+              <Text className="text-brand-700 text-[11px] font-bold">
+                {user.roleName ?? ROLE_LABEL[user.role] ?? user.role}
+              </Text>
+            </View>
+            {user.isDemo && (
+              <View className="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200">
+                <Text className="text-amber-700 text-[10px] font-bold">OFFLINE</Text>
+              </View>
+            )}
           </View>
           <Text className="text-gray-400 text-[11px] font-semibold">BCH Store #1</Text>
         </View>
@@ -153,7 +181,7 @@ export default function AppDrawer() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 12 }}
       >
-        {drawerSectionsForRole(user.role).map((section, sIdx) => (
+        {sections.map((section, sIdx) => (
           <View key={section.title} className={sIdx > 0 ? "mt-4 pt-3 border-t border-gray-100" : ""}>
             <Text className="px-5 pb-2 text-[11px] font-extrabold uppercase tracking-wider text-gray-400">
               {section.title}
@@ -162,13 +190,7 @@ export default function AppDrawer() {
               <DrawerRow
                 key={`${section.title}-${item.href}`}
                 item={item}
-                active={
-                  pathname === item.href ||
-                  (item.href !== "/mechanic" &&
-                    item.href !== "/supervisor" &&
-                    item.href !== "/manager" &&
-                    pathname.startsWith(`${item.href}/`))
-                }
+                active={isActiveRoute(pathname, item.href)}
                 onPress={() => go(item.href)}
               />
             ))}
@@ -196,7 +218,7 @@ export default function AppDrawer() {
         </Pressable>
 
         <Text className="text-center pt-2 text-[10px] text-gray-400">
-          Bharath Cycle Hub · Service & LMS v1.0
+          Bharath Cycle Hub · Service, Stock & LMS v1.1
         </Text>
       </View>
     </View>

@@ -35,13 +35,70 @@ This is a **UI port of a PWA against a mock backend**. There is no network.
 - Seed data lives in `src/mock/*.ts`; shapes in `src/mock/types.ts` deliberately
   **mirror the PWA's Prisma models** so screen code stays byte-for-byte comparable.
   Do not "improve" a type's shape without a reason.
-- State is two zustand stores — screens read these, never fetch:
-  - `src/store/session.ts` — `user`, `hydrated`, `login`, `logout` (AsyncStorage-backed)
+- State is three zustand stores — screens read these, never fetch:
+  - `src/store/session.ts` — `user`, `hydrated`, `login`, `logout`, `hasPermission`
+    (AsyncStorage-backed)
   - `src/store/data.ts` — `jobs`, `prices`, `incentives`, `assemblies`, plus every
     mutation (`updateJobStatus`, `saveNotes`, `savePrice`, …), `loading`/`refreshing`/
     `error`, and `showToast`
+  - `src/store/stock.ts` — the Stock Management module: `summary`, `productTypes`,
+    `stockCounts`, `inbound`, `deliveries`, `transfers`, `warehouses`, the open
+    product `detail`, and that module's mutations
 - Subscribe with a **selector**, one field per call: `useData((s) => s.jobs)`.
   Never `useData()` unselected — it re-renders the screen on every store change.
+
+### Big collections do NOT go in a store
+
+A store holds small, shared things. **Anything that grows without bound is paged into the
+screen that shows it** — a store slice re-renders every subscriber on any write and keeps
+the whole collection alive for the session. Current sizes in the mock: ~10k products, 4k
+deliveries, 1.2k transfers, 600 shipments, and count sheets of 2k+ lines.
+
+**Three pieces. Use all three; do not hand-roll a list.**
+
+1. `src/services/paged.ts` — `createPagedResource`. A collection declares how to search
+   it, what its chips mean and how it sorts; it gets facet counts, memoisation and cursor
+   paging for free. Adding the next collection is a config object, not a file.
+   Facet counts are taken **before** the chip filter, so a chip always says how many rows
+   it *would* give you. Every mutation must call the resource's `invalidate()`.
+2. `src/lib/usePagedList.ts` — the consuming hook. Handles the four things that break
+   infinite lists: stale responses when the query changes mid-flight, `onEndReached`
+   firing repeatedly, the end of the list, and duplicate keys on append. Put **everything
+   the query depends on** in `resetKey` — including `useStock`'s `revision`, or a write
+   will leave the list it was made from showing the old row.
+3. `src/components/PagedList.tsx` — the virtualized `FlatList` wrapper: footer loader,
+   pull-to-refresh, all four states, and the windowing settings.
+
+**Rules that are not optional:**
+
+- Pass `itemHeight` and the list supplies `getItemLayout`, which is what removes blank
+  cells during a fast fling. That means **rows are fixed-height by design** — set an
+  explicit height and `numberOfLines` on every text. Omit `itemHeight` only when rows
+  genuinely vary (an expanded card, mixed headers); a wrong height is worse than none.
+- `ListHeaderComponent` takes an **element, not a function component**. A new component
+  type each render remounts the header and closes the keyboard on every keystroke.
+- Only the FIRST load may replace the screen (`initialLoad`). After that, loading, empty
+  and error render *inside* the list — same reason.
+- Row components are `React.memo` with an explicit comparator, and every callback passed
+  to a row is `useCallback`.
+- Search is debounced (300ms) into a separate state; the raw input never hits the query.
+- **Grouped and paged**: do not fetch everything to bucket it. Sort server-side into the
+  group order and insert a header when the value changes as the stream goes by — see
+  `deliveries/index.tsx`. Grouping is then a property of the order, and it pages.
+
+**Endpoint side.** `queryProducts` / `queryDeliveries` / `queryInbound` / `queryTransfers`
+/ `queryStockCounts` / `queryCountItems` return a page; `searchProducts` is a capped
+type-ahead for pickers; `getStockSummary` returns every hub counter in one call so the hub
+never pulls rows to count them. List rows never carry their children — a count row carries
+a fraction, not its 2,000 lines (`StockCountSummaryRow`).
+
+**Mock data at real scale.** `src/mock/stock-catalog.ts` and `src/mock/stock-volume.ts`
+generate from a **seeded** PRNG, so the same SKU has the same stock on every reload and a
+screenshot stays reproducible. The hand-written fixtures in `stock.ts` stay at the front of
+every collection — they are what demos show.
+
+> Not yet converted: the workshop job screens (`mechanic`, `supervisor`, `history`) still
+> map over a store array. They are the next adopters if job volume grows.
 
 ## 3. Routing
 
@@ -92,8 +149,13 @@ This is a **UI port of a PWA against a mock backend**. There is no network.
 `PressScale` (the `active:scale-95` replacement — use for every tappable card/button),
 `BouncingEmoji` (full-screen loading), `EmptyState`, `ErrorBanner`, `Toast`,
 `SearchBar`, `StatusFilter`, `DatePickerField`, `MonthPickerField`, `PartsSelector`,
-`AppHeader`, `BottomTabBar`, and `src/components/job/*` (`JobCard`, `JobNotes`,
-`JobPhotos`, `PhotoViewer`, `DueBadge`).
+`AppHeader`, `BottomTabBar`, `PagedList` (every long list), and
+`src/components/job/*` (`JobCard`, `JobNotes`, `JobPhotos`, `PhotoViewer`, `DueBadge`).
+
+Stock Management adds `src/components/stock/*` — `ScreenHeader`, `Badge`, `Card`, `KV`,
+`Pills`, `SectionTitle`, `ActionButton`, `Stepper`, `NoAccess` and `FilterSheet`. Its
+status tones live in `src/lib/stock-constants.ts` (`TONE`, `stockHealth`); a stock screen
+names a tone, never a colour.
 
 ## 8. Interaction
 

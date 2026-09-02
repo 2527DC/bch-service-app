@@ -22,6 +22,10 @@ import { COURSES, INITIAL_PROGRESS } from "../mock/lms";
 import type { AssemblyLog, AuditEntry, Course, CourseProgress, Incentive, Job, PriceItem, StaffMember, User } from "../mock/types";
 import { getStartOfTodayIST } from "../lib/timezone";
 
+// Stock Management surface (products, product types, counts, inbound, deliveries,
+// transfers) lives in its own file for size; it is part of this module's API.
+export * from "./mockApi.stock";
+
 // ── In-memory DB (mutable across the session) ────────────────────────────
 let jobs: Job[] = JSON.parse(JSON.stringify(INITIAL_JOBS));
 let prices: PriceItem[] = JSON.parse(JSON.stringify(INITIAL_PRICES));

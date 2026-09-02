@@ -17,12 +17,13 @@ import {
   AlertCircle,
   ArrowRight,
   Bike,
+  FlaskConical,
   KeyRound,
   LogIn,
   ShieldCheck,
   XCircle,
 } from "lucide-react-native";
-import { useSession } from "@/store/session";
+import { DEMO_ACCESS_CODE, useSession } from "@/store/session";
 
 const ROLE_REDIRECT: Record<string, string> = {
   MECHANIC: "/mechanic",
@@ -31,6 +32,7 @@ const ROLE_REDIRECT: Record<string, string> = {
 };
 
 const SUGGESTED_CODES = [
+  { code: DEMO_ACCESS_CODE, label: "Demo" },
   { code: "ADMIN123", label: "Admin" },
   { code: "BCH-MECH-01", label: "Mechanic" },
   { code: "BCH-SUP-01", label: "Supervisor" },
@@ -42,10 +44,28 @@ export default function LoginScreen() {
   const sessionUser = useSession((s) => s.user);
   const rememberedUser = useSession((s) => s.rememberedUser);
   const loginWithCode = useSession((s) => s.loginWithCode);
+  const loginAsDemo = useSession((s) => s.loginAsDemo);
 
   const [accessCode, setAccessCode] = useState(rememberedUser || "ADMIN123");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  // Offline demo — builds a fully-granted local session. Never issues a network request.
+  const handleDemo = async () => {
+    setDemoLoading(true);
+    setError("");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    try {
+      const user = await loginAsDemo();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      router.replace((ROLE_REDIRECT[user.role] || "/mechanic") as never);
+    } catch (e: any) {
+      setError(e?.message || "Could not start demo session");
+    } finally {
+      setDemoLoading(false);
+    }
+  };
 
   // Existing session → navigate straight to dashboard
   useEffect(() => {
@@ -196,6 +216,37 @@ export default function LoginScreen() {
                 <ArrowRight size={18} color="#ffffff" strokeWidth={2.2} />
               </>
             )}
+          </Pressable>
+
+          {/* ── Demo Mode (offline, full access, no API call) ──────────────── */}
+          <View className="flex-row items-center gap-3 my-4">
+            <View className="flex-1 h-px bg-slate-100" />
+            <Text className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">or</Text>
+            <View className="flex-1 h-px bg-slate-100" />
+          </View>
+
+          <Pressable
+            disabled={loading || demoLoading}
+            onPress={handleDemo}
+            accessibilityRole="button"
+            accessibilityLabel="Explore demo mode"
+            className={`w-full py-3.5 rounded-2xl items-center flex-row justify-center gap-2 border-2 ${
+              demoLoading
+                ? "bg-amber-50 border-amber-200"
+                : "bg-white border-amber-300 active:bg-amber-50"
+            }`}
+          >
+            {demoLoading ? (
+              <ActivityIndicator color="#d97706" size="small" />
+            ) : (
+              <FlaskConical size={18} color="#d97706" strokeWidth={2.2} />
+            )}
+            <View>
+              <Text className="text-amber-700 font-bold text-[15px]">Explore Demo Mode</Text>
+              <Text className="text-amber-600/70 text-[10px] font-semibold">
+                Offline · every module unlocked · no server needed
+              </Text>
+            </View>
           </Pressable>
 
           {/* Quick Access Code Chips for Convenience */}

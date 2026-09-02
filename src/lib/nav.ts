@@ -1,6 +1,7 @@
 // Navigation config — single source of truth for both the bottom tab bar and
-// the drawer. Strictly scoped to Service Module + Staff LMS Module.
+// the drawer. Service Module + Staff LMS Module + Stock Management Module.
 import type { Ionicons } from "@expo/vector-icons";
+import { moduleIonicon, moduleByKey, stockChildren, STOCK_MANAGEMENT_KEY } from "./modules";
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
@@ -10,6 +11,10 @@ export type NavItem = {
   badge?: string;
   icon: IoniconName; // solid — shown when active
   iconOutline: IoniconName; // outline — shown when inactive
+  /** RBAC module key. When set, the drawer hides the row unless `can(moduleKey)` is true. */
+  moduleKey?: string;
+  /** Rendered indented under the row above it (a sub-module of a parent module). */
+  child?: boolean;
 };
 
 export type DrawerSection = { title: string; items: NavItem[] };
@@ -44,7 +49,7 @@ export function tabsForRole(role: string): NavItem[] {
   return [...(TABS[role] ?? TABS.MECHANIC), PROFILE_TAB];
 }
 
-// ── Drawer: Scoped Strictly to Service & Staff LMS ─────────────────────────
+// ── Drawer: Service, Stock Management & Staff LMS ──────────────────────────
 const WORKSHOP: NavItem[] = [
   { href: "/mechanic", label: "My Active Jobs", icon: "construct", iconOutline: "construct-outline" },
   { href: "/supervisor", label: "Workshop Queue", icon: "layers", iconOutline: "layers-outline" },
@@ -53,6 +58,23 @@ const WORKSHOP: NavItem[] = [
   { href: "/history", label: "Service History & Logs", icon: "time", iconOutline: "time-outline" },
   { href: "/prices", label: "Rates & Parts Catalog", icon: "pricetags", iconOutline: "pricetags-outline" },
 ];
+
+// Derived from the module catalog so the drawer, the hub screen and the permission map
+// can never disagree about what "Stock Management" contains. Parent first, then its six
+// children in catalog sortOrder, each gated by its own `moduleKey`.
+function buildStockSection(): NavItem[] {
+  const parent = moduleByKey(STOCK_MANAGEMENT_KEY)!;
+  const parentIcon = moduleIonicon(parent.icon);
+  const items: NavItem[] = [
+    { href: parent.route!, label: parent.label, moduleKey: parent.key, ...parentIcon },
+  ];
+  for (const m of stockChildren()) {
+    if (!m.route) continue;
+    items.push({ href: m.route, label: m.label, moduleKey: m.key, child: true, ...moduleIonicon(m.icon) });
+  }
+  return items;
+}
+const STOCK: NavItem[] = buildStockSection();
 
 const STAFF_ACADEMY: NavItem[] = [
   { href: "/lms", label: "Academy Hub", badge: "LMS", icon: "school", iconOutline: "school-outline" },
@@ -66,7 +88,10 @@ const ACCOUNT: NavItem[] = [
   { href: "/profile", label: "Technician Profile", icon: "person", iconOutline: "person-outline" },
 ];
 
-export function drawerSectionsForRole(role: string): DrawerSection[] {
+/** Returns true when a row may be shown. Rows without a `moduleKey` are always shown. */
+export type CanView = (moduleKey: string) => boolean;
+
+export function drawerSectionsForRole(role: string, can: CanView = () => true): DrawerSection[] {
   const sections: DrawerSection[] = [];
 
   // 1. Workshop Section
@@ -79,10 +104,17 @@ export function drawerSectionsForRole(role: string): DrawerSection[] {
     sections.push({ title: "Workshop Operations", items: WORKSHOP });
   }
 
-  // 2. Staff LMS / Academy Section
+  // 2. Stock Management — permission-driven. A person who holds none of the stock grants
+  //    never sees the section; one who holds only some sees only those rows.
+  const stockItems = STOCK.filter((i) => !i.moduleKey || can(i.moduleKey));
+  if (stockItems.length > 0) {
+    sections.push({ title: "Stock Management", items: stockItems });
+  }
+
+  // 3. Staff LMS / Academy Section
   sections.push({ title: "Staff Academy & Skills", items: STAFF_ACADEMY });
 
-  // 3. Account
+  // 4. Account
   sections.push({ title: "Account & Settings", items: ACCOUNT });
 
   return sections;
