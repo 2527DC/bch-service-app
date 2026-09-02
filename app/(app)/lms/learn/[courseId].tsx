@@ -112,7 +112,7 @@ export default function CoursePlayerScreen() {
           </Text>
 
           {/* Score Badge */}
-          <View className="flex-row items-center gap-4 my-5 py-3 px-6 rounded-2xl bg-gray-50 border border-gray-100">
+          <View className="flex-row items-center gap-4 my-5 py-3 px-6 rounded-lg bg-gray-50 border border-gray-100">
             <View className="items-center">
               <Text className="text-xs text-gray-400 font-semibold">Your Score</Text>
               <Text className="text-2xl font-bold text-gray-900">{result.score}%</Text>
@@ -132,7 +132,7 @@ export default function CoursePlayerScreen() {
             <PressScale
               scaleTo={0.97}
               onPress={() => router.back()}
-              className="w-full py-3.5 bg-brand-600 rounded-xl items-center shadow-sm"
+              className="w-full py-3.5 bg-brand-600 rounded-lg items-center shadow-sm"
             >
               <Text className="text-white font-bold text-sm">Return to Pathway</Text>
             </PressScale>
@@ -140,7 +140,7 @@ export default function CoursePlayerScreen() {
             <PressScale
               scaleTo={0.97}
               onPress={handleRestart}
-              className="w-full py-3.5 bg-gray-100 rounded-xl items-center flex-row justify-center gap-2"
+              className="w-full py-3.5 bg-gray-100 rounded-lg items-center flex-row justify-center gap-2"
             >
               <RotateCcw size={16} color="#4b5563" />
               <Text className="text-gray-700 font-bold text-sm">Retake Quiz</Text>
@@ -221,7 +221,7 @@ export default function CoursePlayerScreen() {
                     scaleTo={0.98}
                     disabled={isAnswerSubmitted}
                     onPress={() => handleSelectOption(idx)}
-                    className={`p-4 rounded-2xl border-2 flex-row items-center gap-3 ${borderClass}`}
+                    className={`p-4 rounded-lg border-2 flex-row items-center gap-3 ${borderClass}`}
                   >
                     <View
                       className={`w-7 h-7 rounded-full items-center justify-center border ${
@@ -247,7 +247,7 @@ export default function CoursePlayerScreen() {
 
             {/* Explanation Bottom Box (shown after answer submit) */}
             {isAnswerSubmitted && currentQuestion.explanation && (
-              <View className="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-5">
+              <View className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-5">
                 <View className="flex-row items-center gap-1.5 mb-1">
                   <HelpCircle size={16} color="#2563eb" />
                   <Text className="text-blue-900 font-bold text-xs">Technical Explanation</Text>
@@ -264,7 +264,7 @@ export default function CoursePlayerScreen() {
                 scaleTo={0.97}
                 disabled={selectedOption === null}
                 onPress={handleCheckAnswer}
-                className={`py-4 rounded-2xl items-center shadow-sm ${
+                className={`py-4 rounded-lg items-center shadow-sm ${
                   selectedOption !== null ? "bg-brand-600" : "bg-gray-200"
                 }`}
               >
@@ -280,7 +280,7 @@ export default function CoursePlayerScreen() {
               <PressScale
                 scaleTo={0.97}
                 onPress={handleNext}
-                className="py-4 bg-brand-600 rounded-2xl items-center shadow-sm"
+                className="py-4 bg-brand-600 rounded-lg items-center shadow-sm"
               >
                 <Text className="text-white font-bold text-base">
                   {currentIndex + 1 < questions.length ? "Next Question" : "Complete Quiz"}

@@ -40,13 +40,13 @@ function DrawerRow({
       }}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
-      className={`flex-row items-center justify-between mx-2.5 px-3 rounded-2xl mb-1 ${
+      className={`flex-row items-center justify-between mx-2.5 px-3 rounded-lg mb-1 ${
         child ? "ml-8 py-2" : "py-2.5"
       } ${active ? "bg-brand-50 border border-brand-200" : "bg-transparent"}`}
     >
       <View className="flex-row items-center gap-3 flex-1 mr-2">
         <View
-          className={`rounded-xl items-center justify-center ${child ? "w-7 h-7" : "w-9 h-9"} ${
+          className={`rounded-lg items-center justify-center ${child ? "w-7 h-7" : "w-9 h-9"} ${
             active ? "bg-brand-600" : "bg-gray-100"
           }`}
         >
@@ -144,7 +144,7 @@ export default function AppDrawer() {
         style={{ paddingTop: insets.top + 16 }}
       >
         <View className="flex-row items-center gap-3.5 mb-3">
-          <View className="w-12 h-12 rounded-2xl bg-brand-600 items-center justify-center shadow-sm">
+          <View className="w-12 h-12 rounded-lg bg-brand-600 items-center justify-center shadow-sm">
             <Text className="text-white font-extrabold text-base tracking-wider">
               {initials(user.name)}
             </Text>
@@ -206,9 +206,9 @@ export default function AppDrawer() {
         <Pressable
           onPress={handleLogout}
           accessibilityRole="button"
-          className="flex-row items-center gap-3 px-3 py-2.5 rounded-xl active:bg-red-50"
+          className="flex-row items-center gap-3 px-3 py-2.5 rounded-lg active:bg-red-50"
         >
-          <View className="w-9 h-9 rounded-xl bg-red-100 items-center justify-center">
+          <View className="w-9 h-9 rounded-lg bg-red-100 items-center justify-center">
             <Ionicons name="log-out-outline" size={19} color="#dc2626" />
           </View>
           <View className="flex-1">

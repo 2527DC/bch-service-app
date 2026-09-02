@@ -235,7 +235,7 @@ export default function ManagerScreen() {
           <PressScale
             key={key}
             onPress={() => setTab(key)}
-            className={`flex-1 flex-row items-center justify-center gap-1.5 px-3 py-2 rounded-xl ${
+            className={`flex-1 flex-row items-center justify-center gap-1.5 px-3 py-2 rounded-lg ${
               tab === key ? "bg-gray-900" : "bg-gray-100"
             }`}
           >
@@ -261,7 +261,7 @@ export default function ManagerScreen() {
             <PressScale
               key={key}
               onPress={() => setMoreView(key)}
-              className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl ${
+              className={`flex-row items-center gap-1.5 px-3 py-2 rounded-lg ${
                 moreView === key ? "bg-blue-700" : "bg-gray-100"
               }`}
             >
@@ -294,7 +294,7 @@ export default function ManagerScreen() {
                 <PressScale
                   key={key}
                   onPress={() => setOpenNow(openNow === key ? null : key)}
-                  className={`flex-1 rounded-2xl p-3 ${bg} ${openNow === key ? "border-2 border-gray-900" : ""}`}
+                  className={`flex-1 rounded-lg p-3 ${bg} ${openNow === key ? "border-2 border-gray-900" : ""}`}
                 >
                   <Icon size={18} color={active ? "rgba(255,255,255,0.8)" : "#9ca3af"} />
                   <Text className={`text-2xl font-black mt-1 ${active ? "text-white" : "text-gray-400"}`}>{count}</Text>
@@ -307,7 +307,7 @@ export default function ManagerScreen() {
           </View>
           {/* Inline drill-down */}
           {openNow ? (
-            <View className="bg-white rounded-2xl p-3 shadow-sm mt-2 mb-6 border border-gray-100">
+            <View className="bg-white rounded-lg p-3 shadow-sm mt-2 mb-6 border border-gray-100">
               {nowMap[openNow].length === 0 ? (
                 <Text className="text-gray-400 text-sm text-center py-2">All clear — nothing here</Text>
               ) : (
@@ -337,7 +337,7 @@ export default function ManagerScreen() {
             <Text className="font-bold text-gray-800 text-sm">This period</Text>
             <Text className="text-[11px] text-gray-400 font-medium">{dashScopeLabel}</Text>
           </View>
-          <View className="bg-white rounded-2xl p-4 shadow-sm mb-6">
+          <View className="bg-white rounded-lg p-4 shadow-sm mb-6">
             <View className="flex-row items-center justify-around">
               <View className="items-center">
                 <Text className="text-3xl font-black text-gray-800">{periodIntake}</Text>
@@ -384,7 +384,7 @@ export default function ManagerScreen() {
             <Text className="font-bold text-gray-800 text-sm">Quality & team</Text>
             <Text className="text-[11px] text-gray-400 font-medium">{dashScopeLabel}</Text>
           </View>
-          <View className="bg-white rounded-2xl p-4 shadow-sm mb-3 flex-row items-center gap-4">
+          <View className="bg-white rounded-lg p-4 shadow-sm mb-3 flex-row items-center gap-4">
             <View className="flex-row items-center gap-1">
               <Star size={22} color="#fbbf24" fill="#fbbf24" />
               <Text className="text-2xl font-black text-gray-800">{avgGoogleRating}</Text>
@@ -395,7 +395,7 @@ export default function ManagerScreen() {
               {inAppRatings.length} in-app ratings total
             </Text>
           </View>
-          <View className="bg-white rounded-2xl p-4 shadow-sm">
+          <View className="bg-white rounded-lg p-4 shadow-sm">
             <View className="flex-row items-center gap-2 mb-1">
               <Trophy size={16} color="#f59e0b" />
               <Text className="font-bold text-gray-700 text-sm">Top mechanics</Text>
@@ -439,7 +439,7 @@ export default function ManagerScreen() {
                 <PressScale
                   onPress={() => handleDelete(job.id)}
                   disabled={deleting === job.id}
-                  className={`w-full -mt-1 mb-3 py-2 bg-red-50 rounded-b-xl items-center ${deleting === job.id ? "opacity-50" : ""}`}
+                  className={`w-full -mt-1 mb-3 py-2 bg-red-50 rounded-b-lg items-center ${deleting === job.id ? "opacity-50" : ""}`}
                 >
                   <Text className="text-red-600 font-bold text-sm">
                     {deleting === job.id ? "Deleting..." : "🗑️ Delete Job"}
@@ -478,7 +478,7 @@ export default function ManagerScreen() {
           <>
             <View className="flex-row gap-2 mb-4">
               {summaryTiles.map(([label, count, bg, numColor, labelColor]) => (
-                <View key={label} className={`flex-1 ${bg} rounded-xl p-2 items-center`}>
+                <View key={label} className={`flex-1 ${bg} rounded-lg p-2 items-center`}>
                   <Text className={`text-lg font-black ${numColor}`}>{count}</Text>
                   <Text className={`text-xs ${labelColor}`}>{label}</Text>
                 </View>
@@ -495,7 +495,7 @@ export default function ManagerScreen() {
                 const isExpanded = mechFilter === m.name;
                 const activeJobs = [...m.pending, ...m.hold];
                 return (
-                  <View key={m.name} className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
+                  <View key={m.name} className="bg-white rounded-lg p-4 mb-3 shadow-sm">
                     <PressScale scaleTo={0.98} onPress={() => setMechFilter(isExpanded ? null : m.name)}>
                       <View className="flex-row items-center gap-3 mb-2">
                         <Text className="text-2xl">{m.emoji}</Text>
@@ -580,11 +580,11 @@ export default function ManagerScreen() {
         return (
           <>
             <View className="flex-row gap-3 mb-4">
-              <View className="flex-1 bg-blue-50 rounded-2xl p-4 items-center">
+              <View className="flex-1 bg-blue-50 rounded-lg p-4 items-center">
                 <Text className="text-2xl font-black text-blue-700">{avgTatStr}</Text>
                 <Text className="text-sm text-blue-600 font-medium text-center">⏱️ Avg time: check-in → delivered</Text>
               </View>
-              <View className="flex-1 bg-green-50 rounded-2xl p-4 items-center">
+              <View className="flex-1 bg-green-50 rounded-lg p-4 items-center">
                 <Text className="text-2xl font-black text-green-700">{tatJobs.length}</Text>
                 <Text className="text-sm text-green-600 font-medium">✅ Delivered</Text>
               </View>
@@ -593,7 +593,7 @@ export default function ManagerScreen() {
             {promisedJobs.length > 0 && (
               <>
                 <Text className="font-bold text-gray-700 mb-2">📅 Delivery Commitment</Text>
-                <View className="bg-white rounded-2xl p-4 shadow-sm mb-4">
+                <View className="bg-white rounded-lg p-4 shadow-sm mb-4">
                   <View className="flex-row mb-3">
                     <View className="flex-1 items-center">
                       <Text className={`text-2xl font-black ${pct >= 80 ? "text-green-700" : pct >= 50 ? "text-orange-600" : "text-red-600"}`}>
@@ -621,7 +621,7 @@ export default function ManagerScreen() {
             )}
 
             <Text className="font-bold text-gray-700 mb-2">TAT by Job Type</Text>
-            <View className="bg-white rounded-2xl p-4 shadow-sm mb-4">
+            <View className="bg-white rounded-lg p-4 shadow-sm mb-4">
               {Object.entries(JOB_TYPE).map(([key, config]) => {
                 const typeJobs = tatJobs.filter((j) => j.jobType === key && j.deliveredAt);
                 if (typeJobs.length === 0) return null;
@@ -644,7 +644,7 @@ export default function ManagerScreen() {
             </View>
 
             <Text className="font-bold text-gray-700 mb-2">TAT by Mechanic</Text>
-            <View className="bg-white rounded-2xl p-4 shadow-sm mb-4">
+            <View className="bg-white rounded-lg p-4 shadow-sm mb-4">
               {mechEntries.length === 0 ? (
                 <Text className="text-gray-400 text-center py-4">No data</Text>
               ) : (
@@ -673,7 +673,7 @@ export default function ManagerScreen() {
       {/* ════════ INCENTIVES ════════ */}
       {view === "incentives" && (
         <>
-          <View className="bg-green-50 rounded-2xl p-4 mb-4 items-center">
+          <View className="bg-green-50 rounded-lg p-4 mb-4 items-center">
             <Text className="text-sm text-green-600 font-medium mb-1">Today's Payout</Text>
             <Text className="text-3xl font-black text-green-700">₹{totalTodayIncentive}</Text>
             <Text className="text-xs text-green-500 mt-1">₹100 per 10 paid jobs with Google review</Text>
@@ -682,7 +682,7 @@ export default function ManagerScreen() {
           {[...incentives]
             .sort((a, b) => b.todayDelivered - a.todayDelivered)
             .map((m) => (
-              <View key={m.id} className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
+              <View key={m.id} className="bg-white rounded-lg p-4 mb-3 shadow-sm">
                 <View className="flex-row items-center gap-3 mb-3">
                   <Text className="text-3xl">{m.emoji}</Text>
                   <View className="flex-1">
@@ -717,7 +717,7 @@ export default function ManagerScreen() {
       {/* ════════ ASSEMBLY ════════ */}
       {view === "assembly" && (
         <>
-          <View className="bg-blue-50 rounded-2xl p-4 mb-4 items-center">
+          <View className="bg-blue-50 rounded-lg p-4 mb-4 items-center">
             <Text className="text-sm text-blue-600 font-medium mb-1">Today's Assemblies</Text>
             <Text className="text-3xl font-black text-blue-700">{assemblies.length}</Text>
           </View>
@@ -744,7 +744,7 @@ export default function ManagerScreen() {
               const a85 = m.logs.filter((l) => l.assemblyType === "A85").length;
               const full = m.logs.filter((l) => l.assemblyType === "FULL").length;
               return (
-                <View key={m.name} className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
+                <View key={m.name} className="bg-white rounded-lg p-4 mb-3 shadow-sm">
                   <View className="flex-row items-center gap-3 mb-3">
                     <Text className="text-3xl">{m.emoji}</Text>
                     <View className="flex-1">
@@ -760,7 +760,7 @@ export default function ManagerScreen() {
                         [full, "Full", "bg-green-50", "text-green-700", "text-green-600"],
                       ] as const
                     ).map(([count, label, bg, numColor, labelColor]) => (
-                      <View key={label} className={`flex-1 ${bg} rounded-xl p-2 items-center`}>
+                      <View key={label} className={`flex-1 ${bg} rounded-lg p-2 items-center`}>
                         <Text className={`text-xl font-black ${numColor}`}>{count}</Text>
                         <Text className={`text-xs ${labelColor}`}>{label}</Text>
                       </View>
@@ -808,7 +808,7 @@ export default function ManagerScreen() {
                             ? "Bill updated"
                             : log.action;
                 return (
-                  <View key={log.id} className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                  <View key={log.id} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
                     <View className="flex-row items-center justify-between mb-1">
                       <Text className="font-bold text-sm text-gray-900">{actionLabel}</Text>
                       <Text className="text-xs text-gray-400">{time}</Text>

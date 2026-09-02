@@ -21,7 +21,7 @@ export default function JobNotes({ jobId, notes: initial }: { jobId: string; not
     return (
       <PressScale
         onPress={() => { setText(initial); setOpen(true); }}
-        className="w-full mt-2 bg-yellow-50 py-2 rounded-xl border border-yellow-200 items-center"
+        className="w-full mt-2 bg-yellow-50 py-2 rounded-lg border border-yellow-200 items-center"
       >
         <Text className="text-yellow-700 font-bold text-sm">
           📝 {initial ? "View / Edit Notes" : "Add Notes"}
@@ -31,7 +31,7 @@ export default function JobNotes({ jobId, notes: initial }: { jobId: string; not
   }
 
   return (
-    <View className="mt-2 bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+    <View className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
       <Text className="text-xs font-bold text-yellow-700 mb-1">📝 Notes</Text>
       <TextInput
         value={text}

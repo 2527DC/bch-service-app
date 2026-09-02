@@ -71,6 +71,22 @@ export function stockHealth(p: Pick<Product, "currentStock" | "reorderLevel" | "
   return { key: "OK", label: "OK", tone: "green" };
 }
 
+/**
+ * How many controls are set to something other than their default (plan E3).
+ *
+ * Drives the "Apply N Filters" button and the chip's badge. Counted against `defaults`
+ * rather than against "is it set", so a control resting on its default — sort = NAME,
+ * status = ALL — correctly reads as no filter at all.
+ */
+export function activeFilterCount(
+  value: Record<string, string>,
+  defaults: Record<string, string>
+): number {
+  let n = 0;
+  for (const k of Object.keys(defaults)) if ((value[k] ?? defaults[k]) !== defaults[k]) n++;
+  return n;
+}
+
 /** Left-border accent per health, matching the PWA's getStockAccent(). */
 export const HEALTH_ACCENT: Record<StockHealth["key"], string> = {
   INACTIVE: "border-l-gray-200",

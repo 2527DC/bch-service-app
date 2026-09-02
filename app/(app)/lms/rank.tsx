@@ -62,7 +62,7 @@ export default function LeaderboardScreen() {
                   {top3[1].name.split(" ")[0]}
                 </Text>
                 <Text className="text-gray-400 text-[10px]">{top3[1].xp} XP</Text>
-                <View className="h-16 w-full bg-slate-800 rounded-t-xl mt-2 items-center justify-center border-t border-slate-600">
+                <View className="h-16 w-full bg-slate-800 rounded-t-lg mt-2 items-center justify-center border-t border-slate-600">
                   <Text className="text-xl">🥈</Text>
                   <Text className="text-slate-300 text-[10px] font-bold">#2</Text>
                 </View>
@@ -79,7 +79,7 @@ export default function LeaderboardScreen() {
                   {top3[0].name.split(" ")[0]}
                 </Text>
                 <Text className="text-amber-400 text-xs font-semibold">{top3[0].xp} XP</Text>
-                <View className="h-24 w-full bg-amber-500 rounded-t-2xl mt-2 items-center justify-center border-t-2 border-amber-400 opacity-90">
+                <View className="h-24 w-full bg-amber-500 rounded-t-lg mt-2 items-center justify-center border-t-2 border-amber-400 opacity-90">
                   <Text className="text-2xl">🥇</Text>
                   <Text className="text-amber-300 text-xs font-bold">#1 Leader</Text>
                 </View>
@@ -96,7 +96,7 @@ export default function LeaderboardScreen() {
                   {top3[2].name.split(" ")[0]}
                 </Text>
                 <Text className="text-gray-400 text-[10px]">{top3[2].xp} XP</Text>
-                <View className="h-12 w-full bg-amber-950 rounded-t-xl mt-2 items-center justify-center border-t border-amber-700">
+                <View className="h-12 w-full bg-amber-950 rounded-t-lg mt-2 items-center justify-center border-t border-amber-700">
                   <Text className="text-xl">🥉</Text>
                   <Text className="text-amber-500 text-[10px] font-bold">#3</Text>
                 </View>
@@ -117,7 +117,7 @@ export default function LeaderboardScreen() {
             return (
               <View
                 key={item.id}
-                className={`p-4 rounded-2xl flex-row items-center justify-between border ${
+                className={`p-4 rounded-lg flex-row items-center justify-between border ${
                   isMe ? "bg-brand-50 border-brand-300 shadow-sm" : "bg-white border-gray-100 shadow-sm"
                 }`}
               >
@@ -172,7 +172,7 @@ export default function LeaderboardScreen() {
             </View>
           </View>
 
-          <View className="px-3 py-1.5 rounded-xl bg-brand-500/20 border border-brand-400/30">
+          <View className="px-3 py-1.5 rounded-lg bg-brand-500/20 border border-brand-400/30">
             <Text className="text-brand-300 font-bold text-xs">Active</Text>
           </View>
         </View>

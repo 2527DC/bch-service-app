@@ -89,14 +89,14 @@ export default function LmsDashboardScreen() {
             </View>
 
             {/* Streak Badge */}
-            <View className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/20 border border-amber-500/30">
+            <View className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
               <Flame size={18} color="#f59e0b" />
               <Text className="text-amber-400 font-bold text-sm">{streak} Day Streak</Text>
             </View>
           </View>
 
           {/* XP Progress Bar */}
-          <View className="bg-white/10 p-3.5 rounded-2xl border border-white/10">
+          <View className="bg-white/10 p-3.5 rounded-lg border border-white/10">
             <View className="flex-row justify-between items-center mb-2">
               <View className="flex-row items-center gap-1.5">
                 <Zap size={15} color="#3b82f6" />
@@ -119,10 +119,10 @@ export default function LmsDashboardScreen() {
       <PressScale
         scaleTo={0.98}
         onPress={() => navTo("/lms/learn")}
-        className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-5 flex-row items-center justify-between"
+        className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm mb-5 flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-3.5 flex-1">
-          <View className="w-12 h-12 rounded-2xl bg-emerald-50 items-center justify-center border border-emerald-100">
+          <View className="w-12 h-12 rounded-lg bg-emerald-50 items-center justify-center border border-emerald-100">
             <Play size={22} color="#059669" fill="#059669" />
           </View>
           <View className="flex-1">
@@ -150,9 +150,9 @@ export default function LmsDashboardScreen() {
           <PressScale
             scaleTo={0.96}
             onPress={() => navTo("/lms/learn")}
-            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+            className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm min-h-[140px] justify-between"
           >
-            <View className="w-11 h-11 rounded-2xl bg-blue-50 items-center justify-center border border-blue-100">
+            <View className="w-11 h-11 rounded-lg bg-blue-50 items-center justify-center border border-blue-100">
               <BookOpen size={22} color="#2563eb" />
             </View>
             <View>
@@ -167,9 +167,9 @@ export default function LmsDashboardScreen() {
           <PressScale
             scaleTo={0.96}
             onPress={() => navTo("/lms/practice")}
-            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+            className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm min-h-[140px] justify-between"
           >
-            <View className="w-11 h-11 rounded-2xl bg-purple-50 items-center justify-center border border-purple-100">
+            <View className="w-11 h-11 rounded-lg bg-purple-50 items-center justify-center border border-purple-100">
               <MessageSquare size={22} color="#9333ea" />
             </View>
             <View>
@@ -184,9 +184,9 @@ export default function LmsDashboardScreen() {
           <PressScale
             scaleTo={0.96}
             onPress={() => navTo("/lms/products")}
-            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+            className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm min-h-[140px] justify-between"
           >
-            <View className="w-11 h-11 rounded-2xl bg-amber-50 items-center justify-center border border-amber-100">
+            <View className="w-11 h-11 rounded-lg bg-amber-50 items-center justify-center border border-amber-100">
               <Wrench size={22} color="#d97706" />
             </View>
             <View>
@@ -201,9 +201,9 @@ export default function LmsDashboardScreen() {
           <PressScale
             scaleTo={0.96}
             onPress={() => navTo("/lms/rank")}
-            className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm min-h-[140px] justify-between"
+            className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm min-h-[140px] justify-between"
           >
-            <View className="w-11 h-11 rounded-2xl bg-rose-50 items-center justify-center border border-rose-100">
+            <View className="w-11 h-11 rounded-lg bg-rose-50 items-center justify-center border border-rose-100">
               <Trophy size={22} color="#e11d48" />
             </View>
             <View>
@@ -216,7 +216,7 @@ export default function LmsDashboardScreen() {
 
       {/* ── 4. Daily Workshop Tip ────────────────────────────────────────── */}
       {dashboard?.dailyTip && (
-        <View className="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-5">
+        <View className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-5">
           <View className="flex-row items-center gap-2 mb-1.5">
             <Lightbulb size={18} color="#d97706" />
             <Text className="text-amber-800 font-bold text-sm">{dashboard.dailyTip.title}</Text>
@@ -234,7 +234,7 @@ export default function LmsDashboardScreen() {
             Store Bulletins
           </Text>
           {dashboard.announcements.map((ann) => (
-            <View key={ann.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-2.5">
+            <View key={ann.id} className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm mb-2.5">
               <View className="flex-row items-center justify-between mb-1">
                 <Text className="text-gray-900 font-bold text-sm">{ann.title}</Text>
                 {ann.priority === "HIGH" || ann.priority === "URGENT" ? (

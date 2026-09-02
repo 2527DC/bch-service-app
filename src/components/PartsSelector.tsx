@@ -111,7 +111,7 @@ export default function PartsSelector({
                 <PressScale
                   key={s.id}
                   onPress={() => setServicePrice(servicePrice === s.price ? null : s.price)}
-                  className={`rounded-xl px-4 py-2.5 border ${
+                  className={`rounded-lg px-4 py-2.5 border ${
                     servicePrice === s.price ? "border-gray-800 bg-gray-800" : "border-gray-200 bg-white"
                   }`}
                 >
@@ -165,7 +165,7 @@ export default function PartsSelector({
               onChangeText={setPartsSearch}
               placeholder="Search parts..."
               placeholderTextColor="#9ca3af"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-3 bg-white text-gray-800"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm mb-3 bg-white text-gray-800"
             />
 
             {/* Selected parts */}
@@ -175,7 +175,7 @@ export default function PartsSelector({
                   const item = priceItems.find((p) => p.id === id);
                   if (!item) return null;
                   return (
-                    <View key={id} className="flex-row items-center justify-between rounded-xl px-3 py-2 mb-1 bg-gray-800">
+                    <View key={id} className="flex-row items-center justify-between rounded-lg px-3 py-2 mb-1 bg-gray-800">
                       <View className="flex-row items-center flex-1 mr-2">
                         <Text className="font-medium text-sm text-white" numberOfLines={1}>{item.name}</Text>
                         {editingPriceId === id ? (
@@ -225,7 +225,7 @@ export default function PartsSelector({
                   <Pressable
                     key={p.id}
                     onPress={() => togglePart(p.id)}
-                    className="flex-row items-center justify-between rounded-xl px-3 py-2.5 border border-gray-100 bg-white active:bg-gray-50 min-h-[48px]"
+                    className="flex-row items-center justify-between rounded-lg px-3 py-2.5 border border-gray-100 bg-white active:bg-gray-50 min-h-[48px]"
                   >
                     <Text className="font-medium text-sm text-gray-800 flex-1 mr-2">{p.name}</Text>
                     <Text className="text-gray-400 text-sm font-semibold">₹{getPrice(p.id)}</Text>
@@ -243,7 +243,7 @@ export default function PartsSelector({
                 onChangeText={setHoldReason}
                 placeholder="e.g. Waiting for tube 26T, spoke set ordered..."
                 placeholderTextColor="#9ca3af"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white text-gray-800"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white text-gray-800"
               />
             </View>
           )}
@@ -263,7 +263,7 @@ export default function PartsSelector({
           <PressScale
             onPress={handleConfirm}
             disabled={submitting || (isHold && !holdReason.trim())}
-            className={`w-full py-3.5 rounded-xl items-center ${
+            className={`w-full py-3.5 rounded-lg items-center ${
               submitting || (isHold && !holdReason.trim()) ? "bg-gray-300" : "bg-gray-800"
             }`}
           >

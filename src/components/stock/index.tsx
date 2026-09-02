@@ -52,14 +52,18 @@ export function ScreenHeader({
   );
 }
 
-export function Badge({ label, tone = "gray", small = false }: { label: string; tone?: Tone; small?: boolean }) {
-  const t = TONE[tone];
-  return (
-    <View className={`rounded-full border ${t.bg} ${t.border} ${small ? "px-1.5 py-px" : "px-2 py-0.5"}`}>
-      <Text className={`font-bold ${t.text} ${small ? "text-[9px]" : "text-[10px]"}`}>{label}</Text>
-    </View>
-  );
-}
+// `Badge` is now the soft-fill StatusBadge (doc/stitch/) — tone background, tone text, no
+// border. It is re-exported under the old name so the six screens already importing
+// `Badge` move together, which is the whole point of changing it in place.
+export { default as Badge } from "./StatusBadge";
+export { default as StatusBadge } from "./StatusBadge";
+
+// ── Precision Logic primitives (§13.3) ────────────────────────────────────
+export { default as RecordCard } from "./RecordCard";
+export { default as MetaRun, type MetaToken } from "./MetaRun";
+export { default as DataLabel } from "./DataLabel";
+export { default as StatTile, type StatTileProps } from "./StatTile";
+export { default as StatGrid } from "./StatGrid";
 
 /** Horizontal filter pills with optional counts (generic; StatusFilter is job-specific). */
 export function Pills<T extends string>({
@@ -83,7 +87,7 @@ export function Pills<T extends string>({
             key={o.key}
             onPress={() => onChange(o.key)}
             className={`flex-row items-center gap-1.5 px-3.5 py-2 rounded-full min-h-[40px] ${
-              active ? "bg-gray-800" : "bg-white border border-gray-200"
+              active ? "bg-ink" : "bg-white border border-gray-200"
             }`}
           >
             <Text className={`font-semibold text-[13px] ${active ? "text-white" : "text-gray-600"}`}>{o.label}</Text>
@@ -111,7 +115,7 @@ export function KV({ label, value, tone }: { label: string; value: string | numb
 }
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <View className={`bg-white rounded-2xl border border-gray-100 p-4 ${className}`}>{children}</View>;
+  return <View className={`bg-white rounded-lg border border-gray-100 p-4 ${className}`}>{children}</View>;
 }
 
 export function SectionTitle({ children }: { children: string }) {
@@ -141,7 +145,7 @@ export function ActionButton({
     <PressScale
       onPress={onPress}
       disabled={disabled}
-      className={`flex-1 min-h-[52px] rounded-2xl items-center justify-center px-4 ${bg} ${disabled ? "opacity-40" : ""} ${className}`}
+      className={`flex-1 min-h-[52px] rounded-lg items-center justify-center px-4 ${bg} ${disabled ? "opacity-40" : ""} ${className}`}
     >
       <Text className={`font-bold text-[15px] ${fg}`}>{label}</Text>
     </PressScale>
@@ -154,11 +158,11 @@ export function Stepper({ value, onChange, min = 0, max }: { value: number; onCh
   const inc = () => onChange(max !== undefined ? Math.min(max, value + 1) : value + 1);
   return (
     <View className="flex-row items-center gap-2">
-      <PressScale onPress={dec} className="w-11 h-11 rounded-xl bg-gray-100 items-center justify-center">
+      <PressScale onPress={dec} className="w-11 h-11 rounded-lg bg-gray-100 items-center justify-center">
         <Text className="text-xl font-bold text-gray-700">−</Text>
       </PressScale>
       <Text className="w-10 text-center text-lg font-extrabold text-gray-900">{value}</Text>
-      <PressScale onPress={inc} className="w-11 h-11 rounded-xl bg-gray-800 items-center justify-center">
+      <PressScale onPress={inc} className="w-11 h-11 rounded-lg bg-gray-800 items-center justify-center">
         <Text className="text-xl font-bold text-white">+</Text>
       </PressScale>
     </View>

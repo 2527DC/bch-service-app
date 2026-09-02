@@ -124,7 +124,7 @@ export default function StaffScreen() {
             <PressScale
               scaleTo={0.98}
               onPress={() => router.push(`/staff/${item.id}` as never)}
-              className="bg-white rounded-2xl border border-gray-100 p-3.5 min-h-[56px]"
+              className="bg-white rounded-lg border border-gray-100 p-3.5 min-h-[56px]"
             >
               <View className="flex-row items-center gap-3">
                 <View className="w-11 h-11 rounded-full bg-brand-50 items-center justify-center">

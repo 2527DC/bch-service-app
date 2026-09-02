@@ -86,7 +86,7 @@ export default function ProfileScreen() {
       <View className="px-4 mt-6">
         <PressScale
           onPress={handleLogout}
-          className="flex-row items-center justify-center gap-2 bg-red-50 border border-red-200 rounded-2xl py-4"
+          className="flex-row items-center justify-center gap-2 bg-red-50 border border-red-200 rounded-lg py-4"
         >
           <LogOut size={18} color="#dc2626" />
           <Text className="text-red-600 font-semibold text-base">Sign out</Text>

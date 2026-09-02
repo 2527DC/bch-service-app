@@ -37,7 +37,7 @@ export default function JobCard({
 
   return (
     <View
-      className={`rounded-2xl p-4 mb-3 shadow-sm ${statusConfig?.bgLight || "bg-white"}`}
+      className={`rounded-lg p-4 mb-3 shadow-sm ${statusConfig?.bgLight || "bg-white"}`}
       style={{ borderLeftWidth: 4, borderLeftColor: statusConfig?.hex || "#9ca3af" }}
     >
       {/* Top row: token + status */}
@@ -76,14 +76,14 @@ export default function JobCard({
         {job.complaint && <Text className="text-gray-500 text-sm mt-1">💬 {job.complaint}</Text>}
 
         {job.partsNeeded ? (
-          <View className="mt-2 bg-orange-50 border border-orange-200 rounded-xl p-2.5">
+          <View className="mt-2 bg-orange-50 border border-orange-200 rounded-lg p-2.5">
             <Text className="text-xs font-bold text-orange-700 mb-1">🔧 Parts & Services</Text>
             {job.partsNeeded.split(", ").map((item, i) => (
               <Text key={i} className="text-sm text-orange-800 py-0.5">• {item}</Text>
             ))}
           </View>
         ) : job.amount != null && job.amount > 0 && job.status !== "DELIVERED" ? (
-          <View className="mt-2 bg-red-50 border border-red-200 rounded-xl p-2 flex-row items-center justify-between">
+          <View className="mt-2 bg-red-50 border border-red-200 rounded-lg p-2 flex-row items-center justify-between">
             <Text className="text-xs font-bold text-red-600">⚠️ No breakdown added</Text>
             <Text className="text-xs text-red-500">Use "Add Parts" to update</Text>
           </View>
@@ -99,7 +99,7 @@ export default function JobCard({
 
       {/* Amount — prominent display */}
       {job.amount != null && (
-        <View className="bg-green-50 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+        <View className="bg-green-50 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
           <Text className="text-sm font-bold text-green-700">💰 Payable</Text>
           <Text className="text-lg font-black text-green-800">{formatINR(job.amount)}</Text>
         </View>
@@ -126,7 +126,7 @@ export default function JobCard({
 
       {/* Bill number — shown when billing has entered it */}
       {job.zohoInvoiceId && job.status === "READY" && (
-        <View className="bg-green-50 border border-green-200 rounded-xl p-3 mt-2 flex-row items-center justify-between">
+        <View className="bg-green-50 border border-green-200 rounded-lg p-3 mt-2 flex-row items-center justify-between">
           <View>
             <Text className="text-xs font-bold text-green-600">🧾 Zoho Bill</Text>
             <Text className="text-green-800 font-bold text-base">{job.zohoInvoiceId}</Text>
@@ -162,7 +162,7 @@ export default function JobCard({
                 <PressScale
                   key={next}
                   onPress={() => onStatusChange(job.id, next)}
-                  className={`flex-1 ${nextConfig?.color} py-3 rounded-xl items-center min-h-[56px] justify-center`}
+                  className={`flex-1 ${nextConfig?.color} py-3 rounded-lg items-center min-h-[56px] justify-center`}
                 >
                   <Text className="text-white font-bold text-lg">
                     {nextConfig?.emoji} {nextConfig?.label}
@@ -177,7 +177,7 @@ export default function JobCard({
       {showActions && onAddParts && job.status !== "DELIVERED" && (
         <PressScale
           onPress={() => onAddParts(job.id, job.amount)}
-          className="w-full mt-2 bg-orange-50 py-2.5 rounded-xl border border-orange-200 items-center"
+          className="w-full mt-2 bg-orange-50 py-2.5 rounded-lg border border-orange-200 items-center"
         >
           <Text className="text-orange-700 font-bold text-sm">🔩 Add Parts / Update Bill</Text>
         </PressScale>
@@ -190,7 +190,7 @@ export default function JobCard({
 
       {/* Show saved notes read-only for mechanics */}
       {job.notes && hideDeliverFlow ? (
-        <View className="mt-2 bg-yellow-50 border border-yellow-200 rounded-xl p-2.5">
+        <View className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-2.5">
           <Text className="text-xs font-bold text-yellow-700 mb-0.5">📝 Notes</Text>
           <Text className="text-sm text-yellow-800">{job.notes}</Text>
         </View>
@@ -207,7 +207,7 @@ export default function JobCard({
               const url = getPickupReminderUrl(job.customer.phone, job.customer.name, job.tokenNumber, daysSince, readyBikeCount || 40);
               if (url) Linking.openURL(url);
             }}
-            className="w-full mt-2 bg-red-500 py-2.5 rounded-xl items-center"
+            className="w-full mt-2 bg-red-500 py-2.5 rounded-lg items-center"
           >
             <Text className="text-white font-bold text-sm">📢 Send Pickup Reminder ({daysSince} days waiting)</Text>
           </PressScale>
@@ -219,7 +219,7 @@ export default function JobCard({
 
       {/* Mechanic sees a message instead */}
       {job.status === "READY" && hideDeliverFlow && (
-        <View className="mt-3 bg-green-50 border border-green-200 rounded-xl p-3 items-center">
+        <View className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3 items-center">
           <Text className="text-sm font-medium text-green-700">✅ Marked Ready — staff will handle delivery</Text>
         </View>
       )}
@@ -231,7 +231,7 @@ export default function JobCard({
             const url = getReviewLinkUrl(job.customer.phone, job.customer.name, job.tokenNumber);
             if (url) Linking.openURL(url);
           }}
-          className="w-full mt-3 bg-green-100 py-2.5 rounded-xl items-center"
+          className="w-full mt-3 bg-green-100 py-2.5 rounded-lg items-center"
         >
           <Text className="text-green-700 font-bold text-sm">📱 Send Review Link via WhatsApp</Text>
         </PressScale>
@@ -258,14 +258,14 @@ function AfterPhotoUpload({ jobId, afterCount }: { jobId: string; afterCount: nu
       <PressScale
         onPress={handle}
         disabled={uploading}
-        className={`flex-1 bg-purple-50 py-2 rounded-xl border border-purple-200 items-center ${uploading ? "opacity-50" : ""}`}
+        className={`flex-1 bg-purple-50 py-2 rounded-lg border border-purple-200 items-center ${uploading ? "opacity-50" : ""}`}
       >
         <Text className="text-purple-700 font-bold text-sm">{uploading ? "⏳ Uploading..." : "📸 After Photo"}</Text>
       </PressScale>
       <PressScale
         onPress={handle}
         disabled={uploading}
-        className={`flex-1 bg-purple-50 py-2 rounded-xl border border-purple-200 items-center ${uploading ? "opacity-50" : ""}`}
+        className={`flex-1 bg-purple-50 py-2 rounded-lg border border-purple-200 items-center ${uploading ? "opacity-50" : ""}`}
       >
         <Text className="text-purple-700 font-bold text-sm">🖼️ Gallery</Text>
       </PressScale>
@@ -301,7 +301,7 @@ function ReviewAndDeliver({ job }: { job: Job }) {
     return (
       <PressScale
         onPress={() => setStep("review")}
-        className="w-full mt-3 bg-green-500 py-3 rounded-xl items-center min-h-[56px] justify-center"
+        className="w-full mt-3 bg-green-500 py-3 rounded-lg items-center min-h-[56px] justify-center"
       >
         <Text className="text-white font-bold text-lg">✅ Ready to Deliver</Text>
       </PressScale>
@@ -311,12 +311,12 @@ function ReviewAndDeliver({ job }: { job: Job }) {
   if (step === "delivered") {
     return (
       <View className="mt-3">
-        <View className="bg-green-50 border border-green-200 rounded-xl p-3 mb-3 items-center">
+        <View className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3 items-center">
           <Text className="text-3xl mb-1">🏁</Text>
           <Text className="font-bold text-green-800">Delivered!</Text>
         </View>
         {!isWalkIn && (
-          <PressScale onPress={sendDeliveryWhatsApp} className="w-full bg-green-100 py-3 rounded-xl mb-2 items-center">
+          <PressScale onPress={sendDeliveryWhatsApp} className="w-full bg-green-100 py-3 rounded-lg mb-2 items-center">
             <Text className="text-green-700 font-bold text-base">📱 Send WhatsApp confirmation</Text>
           </PressScale>
         )}
@@ -337,7 +337,7 @@ function ReviewAndDeliver({ job }: { job: Job }) {
 
       <Pressable
         onPress={() => setGoogleReview(!googleReview)}
-        className="flex-row items-center gap-3 bg-white rounded-xl p-3 border border-gray-200 mb-3"
+        className="flex-row items-center gap-3 bg-white rounded-lg p-3 border border-gray-200 mb-3"
       >
         <View className={`w-5 h-5 rounded items-center justify-center ${googleReview ? "bg-green-600" : "border border-gray-300 bg-white"}`}>
           {googleReview && <Text className="text-white text-xs font-bold">✓</Text>}
@@ -351,7 +351,7 @@ function ReviewAndDeliver({ job }: { job: Job }) {
       <PressScale
         onPress={submitReviewAndDeliver}
         disabled={submitting || rating === 0}
-        className={`w-full py-3 rounded-xl items-center ${submitting || rating === 0 ? "bg-gray-300" : "bg-green-500"}`}
+        className={`w-full py-3 rounded-lg items-center ${submitting || rating === 0 ? "bg-gray-300" : "bg-green-500"}`}
       >
         <Text className="text-white font-bold text-base">{submitting ? "Saving..." : "✅ Mark Delivered"}</Text>
       </PressScale>

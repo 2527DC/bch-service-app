@@ -34,7 +34,7 @@ const ICONS: Record<string, LucideIcon> = { Package, Tag, ClipboardCheck, ArrowD
 function Kpi({ label, value, tone, onPress }: { label: string; value: number; tone: Tone; onPress?: () => void }) {
   const t = TONE[tone];
   return (
-    <PressScale onPress={onPress} disabled={!onPress} className={`flex-1 min-w-[30%] rounded-2xl border p-3 ${t.bg} ${t.border}`}>
+    <PressScale onPress={onPress} disabled={!onPress} className={`flex-1 min-w-[30%] rounded-lg border p-3 ${t.bg} ${t.border}`}>
       <Text className={`text-2xl font-extrabold ${t.text}`}>{value.toLocaleString("en-IN")}</Text>
       <Text className="text-[11px] font-semibold text-gray-500 mt-0.5" numberOfLines={1}>
         {label}
@@ -89,7 +89,7 @@ export default function StockManagementHub() {
         title="Stock Management"
         subtitle="Stock, product types, audits, inbound, dispatch and transfers"
         right={
-          <View className="w-10 h-10 rounded-xl bg-gray-800 items-center justify-center">
+          <View className="w-10 h-10 rounded-lg bg-gray-800 items-center justify-center">
             <Boxes size={20} color="#ffffff" />
           </View>
         }
@@ -114,7 +114,7 @@ export default function StockManagementHub() {
               <Kpi label="Deliveries today" value={todayRuns} tone="green" onPress={can("deliveries") ? () => go("/deliveries") : undefined} />
             </View>
             {openCounts > 0 && can("stock_audit") && (
-              <PressScale onPress={() => go("/stock-audit")} className="mt-2 flex-row items-center gap-2 bg-amber-50 border border-amber-200 rounded-2xl px-3 py-2.5">
+              <PressScale onPress={() => go("/stock-audit")} className="mt-2 flex-row items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
                 <ClipboardCheck size={16} color={TONE.amber.hex} />
                 <Text className="flex-1 text-[12px] font-semibold text-amber-800">
                   {openCounts} stock count{openCounts === 1 ? "" : "s"} waiting to be finished
@@ -139,8 +139,8 @@ export default function StockManagementHub() {
               children.map((m) => {
                 const Icon = ICONS[m.icon] ?? Package;
                 return (
-                  <PressScale key={m.key} onPress={() => go(m.route!)} className="bg-white rounded-2xl border border-gray-100 p-3.5 flex-row items-center gap-3 min-h-[64px]">
-                    <View className="w-11 h-11 rounded-xl bg-gray-100 items-center justify-center">
+                  <PressScale key={m.key} onPress={() => go(m.route!)} className="bg-white rounded-lg border border-gray-100 p-3.5 flex-row items-center gap-3 min-h-[64px]">
+                    <View className="w-11 h-11 rounded-lg bg-gray-100 items-center justify-center">
                       <Icon size={20} color={NEUTRAL[800]} />
                     </View>
                     <View className="flex-1">

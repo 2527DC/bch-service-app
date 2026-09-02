@@ -25,6 +25,7 @@ import {
 } from "../mock/stock";
 import { generateProducts } from "../mock/stock-catalog";
 import { generateVolume } from "../mock/stock-volume";
+import { getStartOfTodayIST, getTodayIST, isToday } from "../lib/timezone";
 import { byDateDesc, createPagedResource, type PageQuery, type PageResult } from "./paged";
 import type {
   Delivery,
@@ -83,12 +84,12 @@ async function simulate() {
   await sleep(250 + Math.random() * 250);
 }
 
+// An instant, not a business date — UTC is correct here and stays.
 const nowIso = () => new Date().toISOString();
 const nextId = (prefix: string) => `${prefix}-live-${++seq}`;
-const yyyymm = () => {
-  const d = new Date();
-  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}`;
-};
+// Document-number prefix (IB-202609-0001). This IS a business date: built from the device
+// clock it stamped the wrong month for anyone west of IST for the first 5.5h of the 1st.
+const yyyymm = () => getTodayIST().slice(0, 7).replace("-", "");
 
 function requireProduct(id: string): Product {
   const p = productIndex.get(id);
@@ -242,6 +243,26 @@ export type StockSummary = {
   deliveriesFlagged: number;
   openCounts: number;
   countsToApprove: number;
+
+  // ── KPI tiles on the listing screens (plan §13.8 G3) ────────────────────
+  //
+  // The Inwards tiles show UNITS as the headline with the bill count as the caption —
+  // "50 / In Transit / 1 bills" — so the two are counted separately. `inboundInTransit`
+  // above is the bill count; these are the units.
+  //
+  // They live here, not in a page's facets: facets are scoped to the current search, so
+  // tiles fed from them would tick down as someone types, which reads as a bug.
+  /** Units on every shipment not yet delivered. */
+  inboundInTransitUnits: number;
+  /** Shipments expected from today through the next 7 days, overdue excluded. */
+  inboundThisWeekBills: number;
+  inboundThisWeekUnits: number;
+  /** Units on undelivered lines already spoken for by a customer. */
+  inboundPrebookedUnits: number;
+  /** Units received since the start of the current IST month. */
+  inboundDeliveredThisMonthUnits: number;
+  deliveriesPending: number;
+  deliveriesScheduled: number;
 };
 
 /**
@@ -266,17 +287,44 @@ export async function getStockSummary(): Promise<StockSummary> {
   for (const t of transfers) if (t.status === "PENDING") pendingTransfers++;
 
   let inboundInTransit = 0, inboundOverdueCount = 0;
-  const dayAgo = Date.now() - 86_400_000;
+  let inboundInTransitUnits = 0, inboundThisWeekBills = 0, inboundThisWeekUnits = 0;
+  let inboundPrebookedUnits = 0, inboundDeliveredThisMonthUnits = 0;
+  // Overdue = expected before the start of the IST business day. This used to be a rolling
+  // "now minus 24h", which disagreed with the Inbound screen's own isOverdue() at the day
+  // boundary — the hub's badge and the list it opened could show different counts.
+  const startOfToday = getStartOfTodayIST().getTime();
+  const endOfWeek = startOfToday + 7 * 86_400_000;
+  // IST month start, built from the IST calendar date rather than the device's.
+  const startOfMonth = new Date(`${getTodayIST().slice(0, 7)}-01T00:00:00+05:30`).getTime();
+
   for (const s of inbound) {
-    if (s.status === "DELIVERED") continue;
+    if (s.status === "DELIVERED") {
+      if (s.deliveredAt && new Date(s.deliveredAt).getTime() >= startOfMonth) {
+        inboundDeliveredThisMonthUnits += s.totalItems;
+      }
+      continue;
+    }
     inboundInTransit++;
-    if (new Date(s.expectedDeliveryDate).getTime() < dayAgo) inboundOverdueCount++;
+    inboundInTransitUnits += s.totalItems;
+
+    const expected = new Date(s.expectedDeliveryDate).getTime();
+    // Overdue and "this week" are exclusive: a shipment that is already late belongs to
+    // the overdue count, not to the upcoming week.
+    if (expected < startOfToday) inboundOverdueCount++;
+    else if (expected < endOfWeek) {
+      inboundThisWeekBills++;
+      inboundThisWeekUnits += s.totalItems;
+    }
+
+    for (const l of s.lineItems) if (l.preBookedCustomerName) inboundPrebookedUnits += l.quantity;
   }
 
-  let deliveriesToday = 0, deliveriesFlagged = 0;
+  let deliveriesToday = 0, deliveriesFlagged = 0, deliveriesPending = 0, deliveriesScheduled = 0;
   for (const d of deliveries) {
     if (isTodayRun(d)) deliveriesToday++;
     if (d.status === "FLAGGED") deliveriesFlagged++;
+    if (d.status === "PENDING") deliveriesPending++;
+    if (d.status === "SCHEDULED") deliveriesScheduled++;
   }
 
   let openCounts = 0, countsToApprove = 0;
@@ -289,6 +337,9 @@ export async function getStockSummary(): Promise<StockSummary> {
     activeCount, lowCount, outCount, totalCount: products.length,
     pendingTransfers, inboundInTransit, inboundOverdue: inboundOverdueCount,
     deliveriesToday, deliveriesFlagged, openCounts, countsToApprove,
+    inboundInTransitUnits, inboundThisWeekBills, inboundThisWeekUnits,
+    inboundPrebookedUnits, inboundDeliveredThisMonthUnits,
+    deliveriesPending, deliveriesScheduled,
   };
 }
 
@@ -532,8 +583,12 @@ export async function reviewStockCount(params: { countId: string; approve: boole
 export type InboundFilter = "IN_TRANSIT" | "PARTIAL" | "RECEIVED" | "OVERDUE";
 export type InboundSort = "RECENT" | "EXPECTED" | "VALUE";
 
+// Overdue = expected before the start of the IST business day. Was a rolling "now minus
+// 24h", which disagreed with the Inbound screen's isOverdue() and with getStockSummary —
+// three definitions of the same word, so the chip, the badge and the row could each say
+// something different about one shipment.
 const inboundOverdue = (s: InboundShipment) =>
-  s.status !== "DELIVERED" && new Date(s.expectedDeliveryDate).getTime() < Date.now() - 86_400_000;
+  s.status !== "DELIVERED" && new Date(s.expectedDeliveryDate).getTime() < getStartOfTodayIST().getTime();
 
 const inboundResource = createPagedResource<InboundShipment, InboundFilter, InboundSort>({
   rows: () => inbound,
@@ -607,20 +662,64 @@ export type DeliveryFilter = "TODAY" | "OPEN" | "ON_ROAD" | "FLAGGED" | "DONE";
 export type DeliverySort = "RUN" | "RECENT" | "AREA";
 
 const CLOSED_DELIVERY: DeliveryStatus[] = ["DELIVERED", "WALK_OUT"];
-const startOfTodayMs = () => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
-};
+// "Today" here is a BUSINESS day in IST, not the device's midnight (AGENTS.md §6).
+// This drives both the TODAY chip and its facet count, so a phone in another timezone
+// used to show a different run board than the shop floor's.
 const isTodayRun = (d: Delivery) =>
   d.status === "OUT_FOR_DELIVERY" ||
-  (d.status === "SCHEDULED" && !!d.scheduledDate && new Date(d.scheduledDate).getTime() >= startOfTodayMs() && new Date(d.scheduledDate).getTime() < startOfTodayMs() + 86_400_000);
+  (d.status === "SCHEDULED" && !!d.scheduledDate && isToday(d.scheduledDate));
 
 // The run order: what is moving, then what is promised, then what is stuck, then the tail.
 // Grouping on the LIST is derived from this order, which is what lets a grouped list page.
 const RUN_RANK: Record<DeliveryStatus, number> = {
   OUT_FOR_DELIVERY: 0, SCHEDULED: 1, FLAGGED: 2, PREBOOKED: 3,
   VERIFIED: 4, PENDING: 5, DELIVERED: 6, WALK_OUT: 7,
+};
+
+// ── Filter-screen groups (plan R10, §13.4) ────────────────────────────────
+//
+// Mapped onto the REAL model, not onto the mock. Three corrections the design needed:
+//   * "Packed" is not a DeliveryStatus and is dropped.
+//   * VERIFIED, WALK_OUT and PREBOOKED are real statuses the design had no control for,
+//     and are added — otherwise a third of the board is unreachable from the filter.
+//   * "Dispatch type" was drawn as Walk-out / Bangalore / Outstation, which mixes a STATUS
+//     with a geography flag. It is what it actually is: the `isOutstation` boolean.
+//
+// The date a delivery is judged on is the one it is promised for, falling back to the
+// invoice date — filtering a run board on invoice date would answer the wrong question.
+const deliveryDateMs = (d: Delivery) =>
+  new Date(d.scheduledDate ?? d.deliveredAt ?? d.invoiceDate).getTime();
+
+/** Within the next N days, counting from the start of today IST. Excludes the past. */
+const withinDays = (d: Delivery, days: number) => {
+  const start = getStartOfTodayIST().getTime();
+  const t = deliveryDateMs(d);
+  return t >= start && t < start + days * 86_400_000;
+};
+
+export const DELIVERY_FILTER_GROUPS = {
+  status: {
+    PENDING: (d: Delivery) => d.status === "PENDING",
+    VERIFIED: (d: Delivery) => d.status === "VERIFIED",
+    SCHEDULED: (d: Delivery) => d.status === "SCHEDULED",
+    OUT_FOR_DELIVERY: (d: Delivery) => d.status === "OUT_FOR_DELIVERY",
+    DELIVERED: (d: Delivery) => d.status === "DELIVERED",
+    WALK_OUT: (d: Delivery) => d.status === "WALK_OUT",
+    FLAGGED: (d: Delivery) => d.status === "FLAGGED",
+    PREBOOKED: (d: Delivery) => d.status === "PREBOOKED",
+  },
+  timeline: {
+    // "Custom" from the design is NOT here: a custom range needs a date-range picker wired
+    // to the query, which is its own piece of work. The four presets cover the run board.
+    TODAY: (d: Delivery) => isToday(d.scheduledDate ?? d.deliveredAt ?? d.invoiceDate),
+    DAYS_3: (d: Delivery) => withinDays(d, 3),
+    THIS_WEEK: (d: Delivery) => withinDays(d, 7),
+    THIS_MONTH: (d: Delivery) => withinDays(d, 31),
+  },
+  dispatch: {
+    LOCAL: (d: Delivery) => !d.isOutstation,
+    OUTSTATION: (d: Delivery) => d.isOutstation,
+  },
 };
 
 const deliveryResource = createPagedResource<Delivery, DeliveryFilter, DeliverySort>({
@@ -634,6 +733,7 @@ const deliveryResource = createPagedResource<Delivery, DeliveryFilter, DeliveryS
     FLAGGED: (d) => d.status === "FLAGGED",
     DONE: (d) => CLOSED_DELIVERY.includes(d.status),
   },
+  filterGroups: DELIVERY_FILTER_GROUPS,
   sorts: {
     RUN: (a, b) => RUN_RANK[a.status] - RUN_RANK[b.status] || b.invoiceDate.localeCompare(a.invoiceDate),
     RECENT: byDateDesc((d) => d.invoiceDate),

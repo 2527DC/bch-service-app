@@ -59,14 +59,14 @@ export default function DatePickerField({
                 {value ? (
                   <Pressable
                     onPress={() => { onChange(""); setOpen(false); }}
-                    className="px-5 py-3 rounded-xl bg-gray-100"
+                    className="px-5 py-3 rounded-lg bg-gray-100"
                   >
                     <Text className="text-gray-600 font-bold text-sm">Clear</Text>
                   </Pressable>
                 ) : null}
                 <Pressable
                   onPress={() => { if (!value) onChange(toYMD(dateValue)); setOpen(false); }}
-                  className="flex-1 py-3 rounded-xl bg-gray-800 items-center"
+                  className="flex-1 py-3 rounded-lg bg-gray-800 items-center"
                 >
                   <Text className="text-white font-bold text-sm">Done</Text>
                 </Pressable>

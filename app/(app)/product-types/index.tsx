@@ -79,7 +79,7 @@ export default function ProductTypesScreen() {
 
   const Row = ({ t }: { t: ProductType }) => (
     <Card className={`mb-2 flex-row items-center gap-3 ${t.isActive ? "" : "opacity-70"}`}>
-      <View className="w-10 h-10 rounded-xl bg-gray-100 items-center justify-center">
+      <View className="w-10 h-10 rounded-lg bg-gray-100 items-center justify-center">
         <Tag size={18} color={NEUTRAL[800]} />
       </View>
       <View className="flex-1">
@@ -93,7 +93,7 @@ export default function ProductTypesScreen() {
       </View>
       {canEdit && (
         <>
-          <PressScale onPress={() => openEdit(t)} className="w-10 h-10 rounded-xl bg-gray-100 items-center justify-center" accessibilityLabel={`Rename ${t.name}`}>
+          <PressScale onPress={() => openEdit(t)} className="w-10 h-10 rounded-lg bg-gray-100 items-center justify-center" accessibilityLabel={`Rename ${t.name}`}>
             <Pencil size={16} color={NEUTRAL[800]} />
           </PressScale>
           <Switch value={t.isActive} onValueChange={(v) => toggleActive(t, v)} trackColor={{ true: BRAND[600], false: NEUTRAL[400] }} thumbColor="#ffffff" />
@@ -114,7 +114,7 @@ export default function ProductTypesScreen() {
         subtitle={`${active.length} active · ${retired.length} retired`}
         right={
           canCreate ? (
-            <PressScale onPress={openNew} className="bg-gray-800 px-4 py-2.5 rounded-xl min-h-[44px] justify-center">
+            <PressScale onPress={openNew} className="bg-gray-800 px-4 py-2.5 rounded-lg min-h-[44px] justify-center">
               <Text className="text-white font-bold text-sm">+ Add</Text>
             </PressScale>
           ) : undefined
@@ -132,7 +132,7 @@ export default function ProductTypesScreen() {
               autoFocus
               placeholder="e.g. Cycles, Spares, Accessories"
               placeholderTextColor={NEUTRAL[400]}
-              className="border border-gray-200 rounded-xl px-3 py-3 text-base bg-white text-gray-800 mb-3"
+              className="border border-gray-200 rounded-lg px-3 py-3 text-base bg-white text-gray-800 mb-3"
               returnKeyType="done"
               onSubmitEditing={submit}
             />

@@ -129,7 +129,7 @@ export default function ProductLearningScreen() {
                     <Text className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
                       Technical Specs
                     </Text>
-                    <View className="bg-white p-3 rounded-2xl border border-gray-100 mb-3.5 gap-2">
+                    <View className="bg-white p-3 rounded-lg border border-gray-100 mb-3.5 gap-2">
                       {Object.entries(prod.keySpecs).map(([key, value]) => (
                         <View key={key} className="flex-row justify-between text-xs py-0.5">
                           <Text className="text-gray-500 text-xs font-medium">{key}</Text>
@@ -160,7 +160,7 @@ export default function ProductLearningScreen() {
                           Objection Handling
                         </Text>
                         {prod.objections.map((obj, oIdx) => (
-                          <View key={oIdx} className="bg-amber-50 p-3 rounded-2xl border border-amber-200 mb-2">
+                          <View key={oIdx} className="bg-amber-50 p-3 rounded-lg border border-amber-200 mb-2">
                             <View className="flex-row items-center gap-1.5 mb-1">
                               <HelpCircle size={14} color="#d97706" />
                               <Text className="text-amber-900 font-bold text-xs">Customer: "{obj.objection}"</Text>

@@ -89,7 +89,7 @@ export default function PricesScreen() {
         <Text className="text-xl font-bold text-gray-900">Price List</Text>
         <PressScale
           onPress={() => { resetForm(); setShowForm(true); }}
-          className="bg-gray-800 px-4 py-2 rounded-xl"
+          className="bg-gray-800 px-4 py-2 rounded-lg"
         >
           <Text className="text-white font-bold text-sm">+ Add</Text>
         </PressScale>
@@ -101,7 +101,7 @@ export default function PricesScreen() {
           <PressScale
             key={t}
             onPress={() => setTab(t)}
-            className={`flex-1 py-2.5 rounded-xl items-center ${tab === t ? "bg-gray-800" : "bg-gray-100"}`}
+            className={`flex-1 py-2.5 rounded-lg items-center ${tab === t ? "bg-gray-800" : "bg-gray-100"}`}
           >
             <Text className={`font-bold text-sm ${tab === t ? "text-white" : "text-gray-600"}`}>
               {t === "SERVICE" ? "Service" : "Parts"} ({prices.filter((p) => p.category === t).length})
@@ -143,14 +143,14 @@ export default function PricesScreen() {
 
       {/* Add/Edit form */}
       {showForm && (
-        <View className="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
+        <View className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
           <Text className="font-bold text-gray-700 mb-3">{editingId ? "Edit Item" : "New Item"}</Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder={tab === "SERVICE" ? "e.g. Puncture Repair" : "e.g. Brake Shoe Set"}
             placeholderTextColor="#9ca3af"
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base bg-white text-gray-800 mb-3"
+            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base bg-white text-gray-800 mb-3"
           />
           <View className="flex-row items-center gap-2 mb-3">
             <Text className="text-xl font-bold text-gray-500">₹</Text>
@@ -160,7 +160,7 @@ export default function PricesScreen() {
               onChangeText={(t) => setPrice(t.replace(/[^0-9.]/g, ""))}
               placeholder="Price"
               placeholderTextColor="#9ca3af"
-              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base bg-white text-gray-800"
+              className="flex-1 border border-gray-200 rounded-lg px-4 py-3 text-base bg-white text-gray-800"
             />
           </View>
 
@@ -194,11 +194,11 @@ export default function PricesScreen() {
             <PressScale
               onPress={handleSave}
               disabled={!name.trim() || !price || saving}
-              className={`flex-1 py-3 rounded-xl items-center ${!name.trim() || !price || saving ? "bg-gray-300" : "bg-green-600"}`}
+              className={`flex-1 py-3 rounded-lg items-center ${!name.trim() || !price || saving ? "bg-gray-300" : "bg-green-600"}`}
             >
               <Text className="text-white font-bold">{saving ? "Saving..." : editingId ? "Update" : "Add"}</Text>
             </PressScale>
-            <PressScale onPress={resetForm} className="px-6 bg-gray-200 py-3 rounded-xl items-center justify-center">
+            <PressScale onPress={resetForm} className="px-6 bg-gray-200 py-3 rounded-lg items-center justify-center">
               <Text className="text-gray-600 font-bold">Cancel</Text>
             </PressScale>
           </View>
@@ -234,8 +234,8 @@ export default function PricesScreen() {
         <View className="px-4">
           <View
             className={`flex-row items-center justify-between p-3.5 bg-white ${
-              index === 0 ? "rounded-t-2xl" : ""
-            } ${index === filtered.length - 1 ? "rounded-b-2xl" : "border-b border-gray-100"}`}
+              index === 0 ? "rounded-t-lg" : ""
+            } ${index === filtered.length - 1 ? "rounded-b-lg" : "border-b border-gray-100"}`}
           >
             <View className="flex-1 mr-2">
               <Text className="font-semibold text-gray-800 text-sm">{item.name}</Text>

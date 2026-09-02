@@ -46,10 +46,10 @@ const CountRow = React.memo(
     return (
       <PressScale
         onPress={() => onPress(c.id)}
-        className={`h-[116px] mb-2 mx-4 bg-white rounded-2xl border px-3 py-3 ${overdue ? "border-red-200" : "border-gray-100"}`}
+        className={`h-[116px] mb-2 mx-4 bg-white rounded-lg border px-3 py-3 ${overdue ? "border-red-200" : "border-gray-100"}`}
       >
         <View className="flex-row items-start gap-2.5 flex-1">
-          <View className={`w-10 h-10 rounded-xl items-center justify-center ${TONE[cfg.tone].bg}`}>
+          <View className={`w-10 h-10 rounded-lg items-center justify-center ${TONE[cfg.tone].bg}`}>
             <ClipboardCheck size={18} color={TONE[cfg.tone].hex} />
           </View>
           <View className="flex-1 min-w-0">

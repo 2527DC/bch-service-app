@@ -122,7 +122,7 @@ export default function DeliveryDetailScreen() {
                 autoCapitalize="characters"
                 placeholder="Vehicle no. (optional) e.g. KA-05-MK-2231"
                 placeholderTextColor={NEUTRAL[400]}
-                className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 mb-2"
+                className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 mb-2"
               />
             )}
             <View className="flex-row gap-2">
@@ -163,7 +163,7 @@ export default function DeliveryDetailScreen() {
 
       <View className="px-4">
         {d.flagReason ? (
-          <View className="bg-red-50 border border-red-200 rounded-2xl px-3.5 py-3 mb-3">
+          <View className="bg-red-50 border border-red-200 rounded-lg px-3.5 py-3 mb-3">
             <Text className="text-[11px] font-extrabold uppercase text-red-500">Flagged</Text>
             <Text className="text-[13px] font-semibold text-red-700 mt-0.5">{d.flagReason}</Text>
           </View>
@@ -180,12 +180,12 @@ export default function DeliveryDetailScreen() {
             </View>
             {d.customerPhone && (
               <View className="flex-row gap-2">
-                <PressScale onPress={() => Linking.openURL(`tel:${d.customerPhone}`)} className="w-11 h-11 rounded-xl bg-gray-100 items-center justify-center" accessibilityLabel="Call customer">
+                <PressScale onPress={() => Linking.openURL(`tel:${d.customerPhone}`)} className="w-11 h-11 rounded-lg bg-gray-100 items-center justify-center" accessibilityLabel="Call customer">
                   <Phone size={18} color={NEUTRAL[800]} />
                 </PressScale>
                 <PressScale
                   onPress={() => Linking.openURL(`https://wa.me/91${d.customerPhone}`)}
-                  className="w-11 h-11 rounded-xl bg-green-50 border border-green-200 items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-green-50 border border-green-200 items-center justify-center"
                   accessibilityLabel="WhatsApp customer"
                 >
                   <MessageCircle size={18} color={TONE.green.hex} />
@@ -207,7 +207,7 @@ export default function DeliveryDetailScreen() {
               autoFocus
               placeholder="e.g. Customer not reachable — 3 attempts"
               placeholderTextColor={NEUTRAL[400]}
-              className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 mb-3"
+              className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 mb-3"
             />
             <View className="flex-row gap-2">
               <ActionButton label="Back" variant="secondary" onPress={() => setFlagging(false)} />

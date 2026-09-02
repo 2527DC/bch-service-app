@@ -99,11 +99,11 @@ export default function StaffDetailScreen() {
 
       {/* Workload */}
       <View className="flex-row gap-3 px-4 mt-4">
-        <View className="flex-1 bg-white rounded-2xl border border-gray-100 p-4 items-center">
+        <View className="flex-1 bg-white rounded-lg border border-gray-100 p-4 items-center">
           <Text className="text-3xl font-bold text-brand-600">{workload.open}</Text>
           <Text className="text-gray-400 text-xs mt-1">Open jobs</Text>
         </View>
-        <View className="flex-1 bg-white rounded-2xl border border-gray-100 p-4 items-center">
+        <View className="flex-1 bg-white rounded-lg border border-gray-100 p-4 items-center">
           <Text className="text-3xl font-bold text-green-600">{workload.deliveredToday}</Text>
           <Text className="text-gray-400 text-xs mt-1">Delivered today</Text>
         </View>

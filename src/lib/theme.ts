@@ -10,6 +10,15 @@ export const BRAND = {
   700: "#1d4ed8",
 } as const;
 
+// Precision Logic design system (doc/stitch/). Keep in sync with theme.extend.colors
+// in tailwind.config.js.
+/** Page ground. Cards stay white on top of it. */
+export const SURFACE = "#f8f9ff";
+/** Selected / inverted fill — active chip, primary button. Tailwind slate-800. */
+export const INK = "#1e293b";
+/** Foreground on a brand or ink fill — for icon `color` props, which take no className. */
+export const ON_BRAND = "#ffffff";
+
 // Neutrals used for icon tints (mirrors Tailwind's gray scale).
 export const NEUTRAL = {
   400: "#9ca3af", // inactive icon

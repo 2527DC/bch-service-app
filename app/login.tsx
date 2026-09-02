@@ -164,7 +164,7 @@ export default function LoginScreen() {
                 placeholderTextColor="#94a3b8"
                 returnKeyType="go"
                 onSubmitEditing={() => handleLogin()}
-                className="bg-slate-50 border-2 border-slate-200 focus:border-brand-600 rounded-2xl pl-12 pr-11 py-4 text-base font-bold text-slate-900 tracking-wider"
+                className="bg-slate-50 border-2 border-slate-200 focus:border-brand-600 rounded-lg pl-12 pr-11 py-4 text-base font-bold text-slate-900 tracking-wider"
               />
 
               {accessCode.length > 0 && (
@@ -184,7 +184,7 @@ export default function LoginScreen() {
 
           {/* Error Message */}
           {error ? (
-            <View className="bg-red-50 border border-red-200 rounded-2xl p-3.5 flex-row items-center gap-2.5 mb-4">
+            <View className="bg-red-50 border border-red-200 rounded-lg p-3.5 flex-row items-center gap-2.5 mb-4">
               <AlertCircle size={18} color="#dc2626" />
               <Text className="text-red-700 text-xs font-semibold flex-1 leading-snug">
                 {error}
@@ -198,7 +198,7 @@ export default function LoginScreen() {
             onPress={() => handleLogin()}
             accessibilityRole="button"
             accessibilityLabel="Sign In"
-            className={`w-full py-4 rounded-2xl items-center flex-row justify-center gap-2 shadow-md ${
+            className={`w-full py-4 rounded-lg items-center flex-row justify-center gap-2 shadow-md ${
               loading
                 ? "bg-brand-400"
                 : "bg-brand-600 active:bg-brand-700 active:opacity-90 shadow-brand-500/25"
@@ -230,7 +230,7 @@ export default function LoginScreen() {
             onPress={handleDemo}
             accessibilityRole="button"
             accessibilityLabel="Explore demo mode"
-            className={`w-full py-3.5 rounded-2xl items-center flex-row justify-center gap-2 border-2 ${
+            className={`w-full py-3.5 rounded-lg items-center flex-row justify-center gap-2 border-2 ${
               demoLoading
                 ? "bg-amber-50 border-amber-200"
                 : "bg-white border-amber-300 active:bg-amber-50"
@@ -263,7 +263,7 @@ export default function LoginScreen() {
                     setAccessCode(item.code);
                     setError("");
                   }}
-                  className={`px-3 py-1.5 rounded-xl border ${
+                  className={`px-3 py-1.5 rounded-lg border ${
                     accessCode === item.code
                       ? "bg-brand-50 border-brand-300"
                       : "bg-slate-50 border-slate-200 active:bg-slate-100"

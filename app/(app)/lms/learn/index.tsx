@@ -52,7 +52,7 @@ export default function LearningPathwayScreen() {
     <View className="flex-1 bg-gray-50">
       {/* ── Top Header / Tabs ────────────────────────────────────────────── */}
       <View className="bg-white px-4 pt-3 pb-3 border-b border-gray-100 shadow-sm">
-        <View className="flex-row bg-gray-100 p-1 rounded-xl mb-3">
+        <View className="flex-row bg-gray-100 p-1 rounded-lg mb-3">
           <PressScale
             scaleTo={0.97}
             onPress={() => { setActiveTab("COURSES"); Haptics.selectionAsync().catch(() => {}); }}
@@ -108,7 +108,7 @@ export default function LearningPathwayScreen() {
                         key={course.id}
                         scaleTo={0.98}
                         onPress={() => openCourse(course.id)}
-                        className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm"
+                        className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm"
                       >
                         <View className="flex-row items-start justify-between">
                           <View className="flex-1 pr-2">
@@ -161,7 +161,7 @@ export default function LearningPathwayScreen() {
                   key={quiz.id}
                   scaleTo={0.98}
                   onPress={() => openCourse(quiz.id)}
-                  className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm"
+                  className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm"
                 >
                   <View className="flex-row items-start justify-between">
                     <View className="flex-1 pr-3">
@@ -181,7 +181,7 @@ export default function LearningPathwayScreen() {
                       </View>
                     </View>
 
-                    <View className="w-10 h-10 rounded-2xl bg-brand-50 items-center justify-center border border-brand-100">
+                    <View className="w-10 h-10 rounded-lg bg-brand-50 items-center justify-center border border-brand-100">
                       <Play size={18} color="#2563eb" fill="#2563eb" />
                     </View>
                   </View>

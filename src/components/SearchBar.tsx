@@ -31,8 +31,8 @@ export default function SearchBar({
         autoCorrect={false}
         className={
           large
-            ? "w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-lg bg-white text-gray-800"
-            : `w-full border border-gray-200 rounded-xl ${withIcon ? "pl-9" : "px-3"} pr-3 py-2.5 text-sm bg-white text-gray-800`
+            ? "w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-lg bg-white text-gray-800"
+            : `w-full border border-gray-200 rounded-lg ${withIcon ? "pl-9" : "px-3"} pr-3 py-2.5 text-sm bg-white text-gray-800`
         }
       />
     </View>

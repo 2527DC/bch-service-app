@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inwards Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1e293b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#45474c",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-primary": "#bcc7de",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8590a6",
+                        "outline-variant": "#c5c6cd",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed": "#111c2d",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#3c2300",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-secondary-fixed": "#00174b",
+                        "tertiary-fixed": "#ffddb8",
+                        "primary-fixed": "#d8e3fb",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline": "#75777d",
+                        "on-tertiary-container": "#c88000",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "secondary-container": "#316bf3",
+                        "tertiary": "#201100",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-background": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "primary": "#091426",
+                        "secondary": "#0051d5",
+                        "surface-tint": "#545f73"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "0.75rem",
+                        "card-padding": "1rem",
+                        "stack-gap": "0.5rem",
+                        "section-gap": "1.5rem",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "data-label": ["Hanken Grotesk"],
+                        "caption": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "data-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased md:flex">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden bg-surface text-primary font-headline-lg-mobile text-headline-lg-mobile fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary hover:bg-surface-container-low transition-colors active:opacity-80 rounded-full p-2 -ml-2 cursor-pointer" data-icon="menu">menu</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Inwards</span>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-low transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Filter</span>
+</button>
+</header>
+<!-- SideNav (Desktop - Placeholder for structural consistency based on instructions) -->
+<aside class="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant z-40 overflow-y-auto">
+<div class="p-6">
+<span class="font-headline-lg text-headline-lg text-primary">BCH OPS</span>
+</div>
+<nav class="flex-1 px-4 flex flex-col gap-2">
+<!-- Simplified Sidebar for structural visual mapping -->
+<div class="px-2 py-2 text-on-surface-variant font-caption text-caption uppercase tracking-wider">Overview</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<div class="px-2 py-2 mt-4 text-on-surface-variant font-caption text-caption uppercase tracking-wider">Operations</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-highest text-secondary font-bold border-l-4 border-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">input</span>
+<span class="font-body-md text-body-md">Inwards Tracking</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Stock</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md text-body-md">Deliveries</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="w-full md:ml-64 pt-[4.5rem] md:pt-8 pb-32 md:pb-12 px-margin-mobile md:px-8 max-w-6xl mx-auto flex flex-col gap-section-gap">
+<!-- Desktop Header Equivalent (Title & Subtitle) -->
+<div class="hidden md:flex justify-between items-end mb-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary">Inwards</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Zoho bills &amp; shipment tracking</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-body-md text-body-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">cloud_download</span>
+                Fetch Inbound
+            </button>
+</div>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-stack-gap">
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
+<span class="font-headline-lg text-headline-lg text-[#d97706]">50</span>
+<span class="font-body-md text-body-md text-on-surface mt-1">In Transit</span>
+<span class="font-caption text-caption text-on-surface-variant mt-0.5">1 bills</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center text-center">
+<span class="font-headline-lg text-headline-lg text-secondary">0</span>
+<span class="font-body-md text-body-md text-on-surface mt-1">This Week</span>
+<span class="font-caption text-caption text-on-surface-variant mt-0.5">0 bills</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center text-center">
+<span class="font-headline-lg text-headline-lg text-secondary">0</span>
+<span class="font-body-md text-body-md text-on-surface mt-1">Pre-booked</span>
+<span class="font-caption text-caption text-on-surface-variant mt-0.5">Waiting</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center text-center">
+<span class="font-headline-lg text-headline-lg text-[#16a34a]">0</span>
+<span class="font-body-md text-body-md text-on-surface mt-1">Delivered</span>
+<span class="font-caption text-caption text-on-surface-variant mt-0.5">This Month</span>
+</div>
+</section>
+<!-- Desktop Filter Bar (Visible only on md+) -->
+<div class="hidden md:flex items-center gap-3 pb-2 border-b border-outline-variant">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                Filter
+            </button>
+<!-- Chips for quick filtering placeholder -->
+<div class="flex gap-2 ml-4">
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-data-label text-data-label border border-primary-container">All</button>
+<button class="px-4 py-1.5 rounded-full bg-surface text-on-surface-variant font-data-label text-data-label border border-outline-variant hover:bg-surface-container-low">In Transit</button>
+</div>
+</div>
+<!-- Shipment List -->
+<section class="flex flex-col gap-stack-gap">
+<!-- Card 1 -->
+<article class="bg-surface border border-outline-variant rounded-xl p-card-padding flex flex-col gap-3 relative overflow-hidden group hover:border-l-secondary hover:border-l-[3px] transition-all cursor-pointer">
+<!-- Left Accent Bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#f59e0b] group-hover:w-[3px] group-hover:bg-secondary transition-all"></div>
+<div class="flex justify-between items-start ml-2">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">HERO CYCLES</h2>
+<div class="flex items-center gap-2 mt-1 font-caption text-caption text-on-surface-variant flex-wrap">
+<span>Bill F21034023833</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>IB-202609-0001</span>
+</div>
+</div>
+<div class="bg-[#fef3c7] text-[#d97706] px-2.5 py-1 rounded-lg font-data-label text-data-label uppercase tracking-wider">
+                        In Transit
+                    </div>
+</div>
+<div class="flex justify-between items-end ml-2 mt-2 pt-3 border-t border-surface-container-highest">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Billed</span>
+<span class="font-body-md text-body-md text-on-surface">31 Aug</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption text-on-surface-variant">Items</span>
+<span class="font-body-md text-body-md text-on-surface">50 items</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-[#d97706] font-body-md text-body-md bg-[#fffbeb] px-2 py-1 rounded-md border border-[#fde68a]">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                        5 days
+                    </div>
+</div>
+</article>
+<!-- Empty State / Placeholder for more cards -->
+<div class="hidden py-8 flex flex-col items-center justify-center text-on-surface-variant border-2 border-dashed border-outline-variant rounded-xl mt-4">
+<span class="material-symbols-outlined text-4xl mb-2 opacity-50">inventory</span>
+<p class="font-body-md text-body-md">No more inwards shipments found.</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden bg-surface fixed bottom-0 w-full z-50 pb-safe border-t border-outline-variant flex justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-data-label text-data-label">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="inventory_2">inventory_2</span>
+<span class="font-data-label text-data-label">Stock</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-bold hover:bg-surface-container-low active:scale-95 transition-transform w-full h-full relative" href="#">
+<div class="absolute inset-0 bg-secondary opacity-5 rounded-lg m-1"></div>
+<span class="material-symbols-outlined mb-1 text-secondary" data-icon="input" style="font-variation-settings: 'FILL' 1;">input</span>
+<span class="font-data-label text-data-label text-secondary">Inwards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="local_shipping">local_shipping</span>
+<span class="font-data-label text-data-label">Deliveries</span>
+</a>
+</nav>
+</body></html>

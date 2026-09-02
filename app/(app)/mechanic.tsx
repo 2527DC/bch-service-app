@@ -104,7 +104,7 @@ export default function MechanicScreen() {
 
       {/* Ready bikes not picked up — alert */}
       {readyCount > 0 && (
-        <PressScale onPress={() => setFilter("READY")} className="mx-4 mb-3 bg-purple-600 rounded-xl p-3 shadow-lg">
+        <PressScale onPress={() => setFilter("READY")} className="mx-4 mb-3 bg-purple-600 rounded-lg p-3 shadow-lg">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text className="font-black text-sm text-white">

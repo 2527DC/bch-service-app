@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deliveries &amp; Dispatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1e293b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#45474c",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-primary": "#bcc7de",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8590a6",
+                        "outline-variant": "#c5c6cd",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed": "#111c2d",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#3c2300",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-secondary-fixed": "#00174b",
+                        "tertiary-fixed": "#ffddb8",
+                        "primary-fixed": "#d8e3fb",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline": "#75777d",
+                        "on-tertiary-container": "#c88000",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "secondary-container": "#316bf3",
+                        "tertiary": "#201100",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-background": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "primary": "#091426",
+                        "secondary": "#0051d5",
+                        "surface-tint": "#545f73"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "0.75rem",
+                        "card-padding": "1rem",
+                        "stack-gap": "0.5rem",
+                        "section-gap": "1.5rem",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "data-label": ["Hanken Grotesk"],
+                        "caption": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "data-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f8f9ff; /* background */
+            color: #0b1c30; /* on-background */
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+        
+        /* Custom scrollbar for web if needed, though mobile first */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c5c6cd; border-radius: 4px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased w-full h-screen overflow-hidden flex flex-col pt-safe">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-primary-container text-primary dark:text-primary-fixed font-headline-lg-mobile text-headline-lg-mobile fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center px-margin-mobile h-16 pt-safe">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-2 active:opacity-80 transition-opacity" data-icon="menu">menu</button>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed flex-1 text-center">Deliveries</span>
+<button class="font-data-label text-data-label text-secondary hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg active:opacity-80 transition-opacity flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+            Filter
+        </button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto mt-16 pb-[calc(64px+env(safe-area-inset-bottom,24px))] px-margin-mobile py-4 flex flex-col gap-stack-gap">
+<!-- Search Bar (Sticky Filter Alternative for mobile) -->
+<div class="relative w-full mb-2">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-secondary transition-colors shadow-sm" placeholder="Search invoice, customer..." type="text"/>
+</div>
+<!-- KPI Summary row -->
+<div class="grid grid-cols-2 gap-3 mb-2">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-[#d97706]">45</span>
+<span class="font-caption text-caption text-[#d97706]">Pending</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-secondary">1</span>
+<span class="font-caption text-caption text-secondary">Scheduled</span>
+</div>
+</div>
+<!-- Delivery Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding flex flex-col gap-3 relative overflow-hidden transition-all active:border-l-4 active:border-l-secondary active:pl-[calc(1rem-3px)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#d97706]"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Invoice</span>
+<span class="font-headline-md text-headline-md text-on-surface">INV/25/022579</span>
+</div>
+<div class="bg-[#fef3c7] text-[#d97706] px-2 py-1 rounded font-caption text-caption font-bold flex items-center gap-1">
+                    Pending
+                </div>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Customer</span>
+<span class="font-body-md text-body-md text-on-surface">JAYANTHI</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Items</span>
+<span class="font-body-md text-body-md text-on-surface-variant line-clamp-2">HERCULES SLASHER 24T SS IBC GRN/DARK GRN/YLW VB</span>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant pt-3 mt-1">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Amount</span>
+<span class="font-headline-md text-headline-md text-on-surface">₹6,800</span>
+</div>
+<div class="flex gap-2 w-full justify-end">
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-data-label text-data-label hover:bg-secondary-fixed-dim transition-colors flex-1 md:flex-none text-center">Schedule</button>
+<button class="bg-[#16a34a] text-white px-4 py-2 rounded-lg font-data-label text-data-label hover:bg-opacity-90 transition-colors flex-1 md:flex-none text-center">Walk-out</button>
+</div>
+</div>
+</div>
+<!-- Delivery Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding flex flex-col gap-3 relative overflow-hidden transition-all active:border-l-4 active:border-l-secondary active:pl-[calc(1rem-3px)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#d97706]"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Invoice</span>
+<span class="font-headline-md text-headline-md text-on-surface">INV/25/022580</span>
+</div>
+<div class="bg-[#fef3c7] text-[#d97706] px-2 py-1 rounded font-caption text-caption font-bold flex items-center gap-1">
+                    Pending
+                </div>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Customer</span>
+<span class="font-body-md text-body-md text-on-surface">SHYAM H PADALIA</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Items</span>
+<span class="font-body-md text-body-md text-on-surface-variant line-clamp-2">EMBC/VIPER STEALTH BLACK, LOCK, PUMP, GUARDIAN HELMET, SPECT</span>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant pt-3 mt-1">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Amount</span>
+<span class="font-headline-md text-headline-md text-on-surface">₹69,000</span>
+</div>
+<div class="flex gap-2 w-full justify-end">
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-data-label text-data-label hover:bg-secondary-fixed-dim transition-colors flex-1 md:flex-none text-center">Schedule</button>
+<button class="bg-[#16a34a] text-white px-4 py-2 rounded-lg font-data-label text-data-label hover:bg-opacity-90 transition-colors flex-1 md:flex-none text-center">Walk-out</button>
+</div>
+</div>
+</div>
+<!-- Delivery Card 3 (Scheduled) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding flex flex-col gap-3 relative overflow-hidden transition-all active:border-l-4 active:border-l-secondary active:pl-[calc(1rem-3px)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Invoice</span>
+<span class="font-headline-md text-headline-md text-on-surface">INV/25/022596</span>
+</div>
+<div class="bg-surface-container-high text-secondary px-2 py-1 rounded font-caption text-caption font-bold flex items-center gap-1">
+                    Scheduled
+                </div>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Customer</span>
+<span class="font-body-md text-body-md text-on-surface">BHARATH CYCLE CENTRE</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Items</span>
+<span class="font-body-md text-body-md text-on-surface-variant line-clamp-2">GUARDIAN HELMET x10, PUMP x10</span>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant pt-3 mt-1">
+<div class="flex flex-col">
+<span class="font-data-label text-data-label text-on-surface-variant uppercase">Amount</span>
+<span class="font-headline-md text-headline-md text-on-surface">₹5,000</span>
+</div>
+<div class="flex gap-2 w-full justify-end">
+<button class="bg-outline text-on-surface-variant px-4 py-2 rounded-lg font-data-label text-data-label bg-opacity-20 cursor-not-allowed flex-1 md:flex-none text-center">Schedule</button>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-data-label text-data-label hover:bg-secondary-fixed-dim transition-colors flex-1 md:flex-none text-center">Dispatch</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface dark:bg-primary-container fixed bottom-0 w-full z-50 pb-safe border-t border-outline-variant dark:border-outline flat no shadows flex justify-around items-center h-16 md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container font-data-label text-data-label hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+            Dashboard
+        </button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container font-data-label text-data-label hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full">
+<span class="material-symbols-outlined mb-1" data-icon="inventory_2">inventory_2</span>
+            Stock
+        </button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container font-data-label text-data-label hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full">
+<span class="material-symbols-outlined mb-1" data-icon="input">input</span>
+            Inwards
+        </button>
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed font-bold font-data-label text-data-label hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full">
+<span class="material-symbols-outlined mb-1" data-icon="local_shipping" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+            Deliveries
+        </button>
+</nav>
+</body></html>

@@ -136,7 +136,7 @@ export default function NewTransferScreen() {
             key={w.id}
             onPress={() => !disabled && onChange(w.id)}
             disabled={disabled}
-            className={`flex-1 py-2.5 rounded-xl items-center ${active ? "bg-gray-800" : "bg-gray-100"} ${disabled ? "opacity-30" : ""}`}
+            className={`flex-1 py-2.5 rounded-lg items-center ${active ? "bg-gray-800" : "bg-gray-100"} ${disabled ? "opacity-30" : ""}`}
           >
             <Text className={`text-xs font-bold ${active ? "text-white" : "text-gray-600"}`} numberOfLines={1}>
               {w.name}
@@ -214,7 +214,7 @@ export default function NewTransferScreen() {
                       </Text>
                     </View>
                     <Stepper value={l.quantity} onChange={(v) => setQty(p.id, v)} min={1} />
-                    <PressScale onPress={() => removeLine(p.id)} className="w-10 h-10 rounded-xl bg-red-50 items-center justify-center" accessibilityLabel="Remove line">
+                    <PressScale onPress={() => removeLine(p.id)} className="w-10 h-10 rounded-lg bg-red-50 items-center justify-center" accessibilityLabel="Remove line">
                       <Trash2 size={16} color="#dc2626" />
                     </PressScale>
                   </View>
@@ -231,7 +231,7 @@ export default function NewTransferScreen() {
           placeholder="Why is this needed? (optional)"
           placeholderTextColor={NEUTRAL[400]}
           multiline
-          className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 min-h-[72px]"
+          className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 min-h-[72px]"
           style={{ textAlignVertical: "top" }}
         />
 

@@ -36,7 +36,7 @@ export default function DueBadge({ job }: { job: Job }) {
   // READY + overdue = client hasn't picked up
   if (job.status === "READY" && isOverdue) {
     return (
-      <View className="bg-purple-600 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+      <View className="bg-purple-600 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
         <Text className="text-sm font-black text-white flex-1">
           📞 Not picked up — {absDays} day{absDays > 1 ? "s" : ""} past due
         </Text>
@@ -48,7 +48,7 @@ export default function DueBadge({ job }: { job: Job }) {
   // READY + due today = ready for pickup today
   if (job.status === "READY" && isDueToday) {
     return (
-      <View className="bg-green-600 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+      <View className="bg-green-600 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
         <Text className="text-sm font-black text-white">✅ Ready — pickup due today</Text>
         <Text className="text-sm font-bold text-white">{dateStr}</Text>
       </View>
@@ -58,7 +58,7 @@ export default function DueBadge({ job }: { job: Job }) {
   // Pending/Hold + overdue = work not done, past deadline
   if (isOverdue) {
     return (
-      <PulseView className="bg-red-600 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+      <PulseView className="bg-red-600 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
         <Text className="text-sm font-black text-white">
           🚨 OVERDUE by {absDays} day{absDays > 1 ? "s" : ""}
         </Text>
@@ -69,7 +69,7 @@ export default function DueBadge({ job }: { job: Job }) {
 
   if (isDueToday) {
     return (
-      <View className="bg-orange-500 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+      <View className="bg-orange-500 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
         <Text className="text-sm font-black text-white">⚠️ DUE TODAY</Text>
         <Text className="text-sm font-bold text-white">{dateStr}</Text>
       </View>
@@ -77,7 +77,7 @@ export default function DueBadge({ job }: { job: Job }) {
   }
 
   return (
-    <View className="bg-blue-50 rounded-xl px-3 py-2 mb-2 flex-row items-center justify-between">
+    <View className="bg-blue-50 rounded-lg px-3 py-2 mb-2 flex-row items-center justify-between">
       <Text className="text-sm font-bold text-blue-700">📅 Due: {dateStr}</Text>
       <Text className="text-xs text-blue-500">{diffDays} day{diffDays > 1 ? "s" : ""} left</Text>
     </View>

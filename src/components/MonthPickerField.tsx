@@ -47,7 +47,7 @@ export default function MonthPickerField({
               {value ? (
                 <Pressable
                   onPress={() => { onChange(""); setOpen(false); }}
-                  className="py-3 px-2 rounded-xl"
+                  className="py-3 px-2 rounded-lg"
                 >
                   <Text className="text-sm font-medium text-red-500">Clear month filter</Text>
                 </Pressable>
@@ -56,7 +56,7 @@ export default function MonthPickerField({
                 <Pressable
                   key={m.key}
                   onPress={() => { onChange(m.key); setOpen(false); }}
-                  className={`py-3 px-2 rounded-xl ${value === m.key ? "bg-gray-100" : ""}`}
+                  className={`py-3 px-2 rounded-lg ${value === m.key ? "bg-gray-100" : ""}`}
                 >
                   <Text className={`text-sm ${value === m.key ? "font-bold text-gray-900" : "text-gray-700"}`}>
                     {m.label}

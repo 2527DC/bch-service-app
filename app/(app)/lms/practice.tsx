@@ -160,7 +160,7 @@ export default function RoleplayPracticeScreen() {
                 {/* Budget & Reward Tag */}
                 <View className="flex-row items-center justify-between mt-4 pt-3 border-t border-gray-100">
                   <Text className="text-gray-400 text-xs">Budget: {sc.customerPersona.budget}</Text>
-                  <View className="flex-row items-center gap-1.5 px-3 py-1 bg-brand-50 rounded-xl">
+                  <View className="flex-row items-center gap-1.5 px-3 py-1 bg-brand-50 rounded-lg">
                     <Text className="text-brand-700 font-bold text-xs">Start Roleplay</Text>
                   </View>
                 </View>
@@ -181,7 +181,7 @@ export default function RoleplayPracticeScreen() {
               You successfully addressed the customer's objection with objective technical explanations.
             </Text>
 
-            <View className="flex-row items-center gap-4 my-5 py-3 px-6 rounded-2xl bg-gray-50 border border-gray-100">
+            <View className="flex-row items-center gap-4 my-5 py-3 px-6 rounded-lg bg-gray-50 border border-gray-100">
               <View className="items-center">
                 <Text className="text-xs text-gray-400 font-semibold">Handling Score</Text>
                 <Text className="text-2xl font-bold text-purple-700">{Math.max(totalScore, 10)} / 10</Text>
@@ -199,7 +199,7 @@ export default function RoleplayPracticeScreen() {
             <PressScale
               scaleTo={0.97}
               onPress={() => setActiveScenario(null)}
-              className="w-full py-3.5 bg-brand-600 rounded-xl items-center shadow-sm"
+              className="w-full py-3.5 bg-brand-600 rounded-lg items-center shadow-sm"
             >
               <Text className="text-white font-bold text-sm">Choose Another Scenario</Text>
             </PressScale>
@@ -229,7 +229,7 @@ export default function RoleplayPracticeScreen() {
                 className={`mb-3 flex-row ${item.speaker === "customer" ? "justify-start" : "justify-end"}`}
               >
                 <View
-                  className={`max-w-[82%] p-3.5 rounded-2xl ${
+                  className={`max-w-[82%] p-3.5 rounded-lg ${
                     item.speaker === "customer"
                       ? "bg-white border border-gray-200 shadow-sm"
                       : "bg-brand-600 shadow-sm"
@@ -274,7 +274,7 @@ export default function RoleplayPracticeScreen() {
                     key={optIdx}
                     scaleTo={0.98}
                     onPress={() => handleSelectOption(opt)}
-                    className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 active:bg-brand-50 active:border-brand-300"
+                    className="p-3.5 rounded-lg bg-gray-50 border border-gray-200 active:bg-brand-50 active:border-brand-300"
                   >
                     <Text className="text-gray-900 text-xs leading-relaxed">{opt.text}</Text>
                   </PressScale>

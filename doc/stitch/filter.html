@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inventory Flow - Filters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1e293b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#45474c",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-primary": "#bcc7de",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8590a6",
+                        "outline-variant": "#c5c6cd",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed": "#111c2d",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#3c2300",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-secondary-fixed": "#00174b",
+                        "tertiary-fixed": "#ffddb8",
+                        "primary-fixed": "#d8e3fb",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline": "#75777d",
+                        "on-tertiary-container": "#c88000",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "secondary-container": "#316bf3",
+                        "tertiary": "#201100",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-background": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "primary": "#091426",
+                        "secondary": "#0051d5",
+                        "surface-tint": "#545f73"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "0.75rem",
+                        "card-padding": "1rem",
+                        "stack-gap": "0.5rem",
+                        "section-gap": "1.5rem",
+                        "margin-mobile": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "data-label": ["Hanken Grotesk"],
+                        "caption": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "data-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface h-screen flex flex-col antialiased">
+<!-- Top App Bar -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16 shrink-0 sticky top-0 z-50">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Filters</h1>
+<button class="text-secondary font-data-label text-data-label uppercase tracking-widest hover:bg-surface-container-low px-3 py-2 rounded-lg transition-colors">Reset</button>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-margin-mobile flex flex-col gap-section-gap pb-[100px]">
+<!-- Status Filter -->
+<section>
+<h2 class="font-data-label text-data-label text-on-surface-variant uppercase tracking-widest mb-stack-gap">Status</h2>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-stack-gap">
+<button class="bg-primary-container text-on-primary border border-primary-container py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">pending</span>
+                    Pending (45)
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                    Scheduled (1)
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                    Out
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                    Delivered
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flagged
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-3 px-4 rounded-xl font-body-md text-body-md flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                    Packed
+                </button>
+</div>
+</section>
+<!-- Timeline Filter -->
+<section>
+<h2 class="font-data-label text-data-label text-on-surface-variant uppercase tracking-widest mb-stack-gap">Timeline</h2>
+<div class="flex flex-wrap gap-stack-gap">
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-2 px-5 rounded-full font-body-md text-body-md transition-colors">Today</button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-2 px-5 rounded-full font-body-md text-body-md transition-colors">3 Days</button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-2 px-5 rounded-full font-body-md text-body-md transition-colors">This Week</button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-2 px-5 rounded-full font-body-md text-body-md transition-colors">This Month</button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline py-2 px-5 rounded-full font-body-md text-body-md flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                    Custom
+                </button>
+</div>
+</section>
+<!-- Type Filter -->
+<section>
+<h2 class="font-data-label text-data-label text-on-surface-variant uppercase tracking-widest mb-stack-gap">Dispatch Type</h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-stack-gap">
+<label class="relative flex items-start cursor-pointer group">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 w-full flex items-center gap-3 group-hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0"></div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Walk-out</span>
+<span class="font-caption text-caption text-on-surface-variant">Immediate store pickups</span>
+</div>
+</div>
+</label>
+<label class="relative flex items-start cursor-pointer group">
+<div class="bg-surface-container-low border-2 border-secondary rounded-xl p-4 w-full flex items-center gap-3 transition-colors">
+<div class="w-5 h-5 rounded-full border-2 border-secondary flex items-center justify-center shrink-0">
+<div class="w-2.5 h-2.5 bg-secondary rounded-full"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Bangalore</span>
+<span class="font-caption text-caption text-on-surface-variant">Local city limits delivery</span>
+</div>
+</div>
+</label>
+<label class="relative flex items-start cursor-pointer group">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 w-full flex items-center gap-3 group-hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center shrink-0"></div>
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Outstation</span>
+<span class="font-caption text-caption text-on-surface-variant">Long-distance transit</span>
+</div>
+</div>
+</label>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<footer class="bg-surface border-t border-outline-variant p-margin-mobile fixed bottom-0 w-full z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<button class="w-full bg-secondary text-on-secondary font-headline-md text-headline-md py-4 rounded-xl flex justify-center items-center gap-2 active:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">filter_alt</span>
+            Apply 3 Filters
+        </button>
+</footer>
+</body></html>

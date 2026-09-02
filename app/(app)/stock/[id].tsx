@@ -116,7 +116,7 @@ export default function ProductDetailScreen() {
       <View className="px-4">
         {/* Headline stock */}
         <Card className="flex-row items-center gap-4">
-          <View className="w-14 h-14 rounded-2xl bg-gray-100 items-center justify-center">
+          <View className="w-14 h-14 rounded-lg bg-gray-100 items-center justify-center">
             <Package size={26} color={NEUTRAL[800]} />
           </View>
           <View className="flex-1">
@@ -179,7 +179,7 @@ export default function ProductDetailScreen() {
                 <PressScale
                   key={l.warehouseId}
                   onPress={() => setWarehouseId(l.warehouseId)}
-                  className={`flex-1 py-2.5 rounded-xl items-center ${warehouseId === l.warehouseId ? "bg-gray-800" : "bg-gray-100"}`}
+                  className={`flex-1 py-2.5 rounded-lg items-center ${warehouseId === l.warehouseId ? "bg-gray-800" : "bg-gray-100"}`}
                 >
                   <Text className={`text-xs font-bold ${warehouseId === l.warehouseId ? "text-white" : "text-gray-600"}`} numberOfLines={1}>
                     {l.warehouseName} ({l.quantity})
@@ -194,7 +194,7 @@ export default function ProductDetailScreen() {
                 <PressScale
                   key={d}
                   onPress={() => setDirection(d)}
-                  className={`flex-1 py-2.5 rounded-xl items-center ${direction === d ? (d === "IN" ? "bg-green-600" : "bg-red-600") : "bg-gray-100"}`}
+                  className={`flex-1 py-2.5 rounded-lg items-center ${direction === d ? (d === "IN" ? "bg-green-600" : "bg-red-600") : "bg-gray-100"}`}
                 >
                   <Text className={`text-xs font-bold ${direction === d ? "text-white" : "text-gray-600"}`}>{d === "IN" ? "+ Add" : "− Remove"}</Text>
                 </PressScale>
@@ -211,7 +211,7 @@ export default function ProductDetailScreen() {
               onChangeText={setReason}
               placeholder="Reason (damage, found, correction…)"
               placeholderTextColor={NEUTRAL[400]}
-              className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 mb-3"
+              className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 mb-3"
             />
 
             <ActionButton

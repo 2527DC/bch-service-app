@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inventory Flow - Stock</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#1e293b",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-secondary": "#ffffff",
+                      "surface-bright": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "on-surface-variant": "#45474c",
+                      "surface-variant": "#d3e4fe",
+                      "inverse-primary": "#bcc7de",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#cbdbf5",
+                      "on-error": "#ffffff",
+                      "surface-container-highest": "#d3e4fe",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#8590a6",
+                      "outline-variant": "#c5c6cd",
+                      "inverse-surface": "#213145",
+                      "on-primary-fixed": "#111c2d",
+                      "on-secondary-container": "#fefcff",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container": "#e5eeff",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-fixed-variant": "#003ea8",
+                      "tertiary-container": "#3c2300",
+                      "secondary-fixed": "#dbe1ff",
+                      "on-secondary-fixed": "#00174b",
+                      "tertiary-fixed": "#ffddb8",
+                      "primary-fixed": "#d8e3fb",
+                      "primary-fixed-dim": "#bcc7de",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-primary-fixed-variant": "#3c475a",
+                      "outline": "#75777d",
+                      "on-tertiary-container": "#c88000",
+                      "surface": "#f8f9ff",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#eaf1ff",
+                      "secondary-container": "#316bf3",
+                      "tertiary": "#201100",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-background": "#0b1c30",
+                      "background": "#f8f9ff",
+                      "secondary-fixed-dim": "#b4c5ff",
+                      "primary": "#091426",
+                      "secondary": "#0051d5",
+                      "surface-tint": "#545f73"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter-mobile": "0.75rem",
+                      "card-padding": "1rem",
+                      "stack-gap": "0.5rem",
+                      "section-gap": "1.5rem",
+                      "margin-mobile": "1rem"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ],
+                      "data-label": [
+                              "Hanken Grotesk"
+                      ],
+                      "caption": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "data-label": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pt-16 pb-24 md:pb-0 md:pt-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-primary-container fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline flat no shadows hidden md:flex md:flex-col md:relative md:h-auto">
+<div class="flex justify-between items-center px-margin-mobile h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-primary dark:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors active:opacity-80 transition-opacity p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed md:font-headline-lg md:text-headline-lg">Inventory Flow</h1>
+</div>
+<!-- Desktop Nav Cluster -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant px-4 py-2 rounded-lg transition-colors font-body-md text-body-md" href="#">
+                    Dashboard
+                </a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed font-bold bg-surface-container-low dark:bg-surface-variant px-4 py-2 rounded-lg transition-colors font-body-md text-body-md" href="#">
+                    Stock
+                </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant px-4 py-2 rounded-lg transition-colors font-body-md text-body-md" href="#">
+                    Inwards
+                </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant px-4 py-2 rounded-lg transition-colors font-body-md text-body-md" href="#">
+                    Deliveries
+                </a>
+</nav>
+<button class="text-primary dark:text-primary-fixed font-body-md text-body-md flex items-center gap-2 hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors active:opacity-80 transition-opacity px-4 py-2 rounded-lg border border-outline-variant dark:border-outline">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span class="hidden md:inline">Filter</span>
+</button>
+</div>
+</header>
+<!-- Mobile Header (Duplicate for visual parity with strict layout logic) -->
+<header class="bg-surface dark:bg-primary-container fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline flat no shadows md:hidden">
+<div class="flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center gap-2">
+<button class="text-primary dark:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors active:opacity-80 transition-opacity p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">Stock</h1>
+</div>
+<button class="text-primary dark:text-primary-fixed font-body-md text-body-md flex items-center gap-1 hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors active:opacity-80 transition-opacity px-3 py-1.5 rounded-lg border border-outline-variant dark:border-outline">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                Filter
+            </button>
+</div>
+</header>
+<main class="md:max-w-7xl md:mx-auto md:px-margin-mobile md:py-8 flex flex-col md:flex-row gap-8">
+<!-- Desktop Sidebar Navigation (Optional Enhancement for larger screens) -->
+<aside class="hidden md:block w-64 shrink-0">
+<div class="sticky top-8 bg-surface-container-lowest rounded-xl border border-outline-variant p-4 space-y-2">
+<div class="font-data-label text-data-label text-on-surface-variant uppercase mb-4 px-2">Operations</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                 </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-low text-secondary font-bold font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                    Stock
+                 </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">input</span>
+                    Inwards
+                 </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                    Deliveries
+                 </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 w-full max-w-full overflow-hidden">
+<!-- Sticky Search Bar -->
+<div class="sticky top-16 md:top-0 z-40 bg-background/95 backdrop-blur-sm px-margin-mobile md:px-0 py-4 border-b border-outline-variant/50 md:border-none">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none shadow-sm" placeholder="Search product, SKU, brand, or size..." type="text"/>
+</div>
+<!-- Quick Filter Chips -->
+<div class="flex overflow-x-auto hide-scrollbar gap-2 mt-4 pb-2">
+<button class="shrink-0 bg-primary-container text-on-primary rounded-full px-4 py-1.5 font-data-label text-data-label border border-primary-container">All</button>
+<button class="shrink-0 bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-1.5 font-data-label text-data-label border border-outline-variant hover:bg-surface-container-low transition-colors">In Stock</button>
+<button class="shrink-0 bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-1.5 font-data-label text-data-label border border-outline-variant hover:bg-surface-container-low transition-colors">No Stock</button>
+<button class="shrink-0 bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-1.5 font-data-label text-data-label border border-outline-variant hover:bg-surface-container-low transition-colors">Low Stock</button>
+<button class="shrink-0 bg-surface-container-lowest text-on-surface-variant rounded-full px-4 py-1.5 font-data-label text-data-label border border-outline-variant hover:bg-surface-container-low transition-colors">Inactive</button>
+</div>
+</div>
+<!-- List Meta -->
+<div class="px-margin-mobile md:px-0 py-4 flex justify-between items-center text-on-surface-variant">
+<span class="font-body-md text-body-md">100 of 5,739 products</span>
+<span class="font-caption text-caption flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">sync</span> 17s ago</span>
+</div>
+<!-- Inventory List -->
+<div class="px-margin-mobile md:px-0 space-y-stack-gap">
+<!-- Card 1: Out of Stock -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-card-padding flex justify-between items-start relative overflow-hidden group hover:border-outline transition-colors cursor-pointer shadow-sm">
+<!-- Left Accent Bar for Attention -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex-1 pr-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-secondary transition-colors">HERO VIPER 24T SS IBC RS V/B GRY/RED</h3>
+<div class="flex flex-wrap items-center gap-2 font-caption text-caption text-on-surface-variant mb-2">
+<span class="font-data-label text-data-label text-secondary">0009</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-secondary font-medium">HERO CYCLES</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Uncategorized</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-body-lg text-body-lg text-on-surface">₹4,399</span>
+<span class="font-caption text-caption text-on-surface-variant line-through">cost ₹4,399</span>
+</div>
+</div>
+<div class="flex flex-col items-end justify-between h-full min-h-[5rem]">
+<span class="font-headline-lg text-headline-lg text-error">0</span>
+<div class="flex flex-col items-end gap-2 mt-auto pt-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Out</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2: Out of Stock -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-card-padding flex justify-between items-start relative overflow-hidden group hover:border-outline transition-colors cursor-pointer shadow-sm">
+<!-- Left Accent Bar for Attention -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex-1 pr-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-secondary transition-colors">SPRINT ALPINE 26T SS SPORTS FS DD BLU/GRN</h3>
+<div class="flex flex-wrap items-center gap-2 font-caption text-caption text-on-surface-variant mb-2">
+<span class="font-data-label text-data-label text-secondary">0008</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="italic text-on-surface-variant">Unbranded</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Uncategorized</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-body-lg text-body-lg text-on-surface">₹14,500</span>
+<span class="font-caption text-caption text-on-surface-variant">cost ₹6,225</span>
+</div>
+</div>
+<div class="flex flex-col items-end justify-between h-full min-h-[5rem]">
+<span class="font-headline-lg text-headline-lg text-error">0</span>
+<div class="flex flex-col items-end gap-2 mt-auto pt-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Out</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3: Out of Stock -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-card-padding flex justify-between items-start relative overflow-hidden group hover:border-outline transition-colors cursor-pointer shadow-sm">
+<!-- Left Accent Bar for Attention -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex-1 pr-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-secondary transition-colors">SPRINT ALPINE 26T SS SPORTS RS VB RED/BLK</h3>
+<div class="flex flex-wrap items-center gap-2 font-caption text-caption text-on-surface-variant mb-2">
+<span class="font-data-label text-data-label text-secondary">0007</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="italic text-on-surface-variant">Unbranded</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Uncategorized</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-body-lg text-body-lg text-on-surface">₹15,600</span>
+<span class="font-caption text-caption text-on-surface-variant">cost ₹5,300</span>
+</div>
+</div>
+<div class="flex flex-col items-end justify-between h-full min-h-[5rem]">
+<span class="font-headline-lg text-headline-lg text-error">0</span>
+<div class="flex flex-col items-end gap-2 mt-auto pt-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Out</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4: In Stock (Example to show variation) -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-card-padding flex justify-between items-start relative overflow-hidden group hover:border-outline transition-colors cursor-pointer shadow-sm">
+<div class="flex-1 pr-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-secondary transition-colors">HERO LECTRO C6 700C 7S BLK/BLU</h3>
+<div class="flex flex-wrap items-center gap-2 font-caption text-caption text-on-surface-variant mb-2">
+<span class="font-data-label text-data-label text-secondary">0012</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-secondary font-medium">HERO LECTRO</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>E-Bikes</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-body-lg text-body-lg text-on-surface">₹32,999</span>
+<span class="font-caption text-caption text-on-surface-variant">cost ₹24,500</span>
+</div>
+</div>
+<div class="flex flex-col items-end justify-between h-full min-h-[5rem]">
+<span class="font-headline-lg text-headline-lg text-on-surface">14</span>
+<div class="flex flex-col items-end gap-2 mt-auto pt-2">
+<span class="bg-surface-variant text-on-secondary-fixed-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">In Stock</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface dark:bg-primary-container fixed bottom-0 w-full z-50 pb-safe border-t border-outline-variant dark:border-outline flat no shadows flex justify-around items-center h-16 w-full md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-data-label text-data-label">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed font-bold hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="inventory_2" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-data-label text-data-label">Stock</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="input">input</span>
+<span class="font-data-label text-data-label">Inwards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-surface-variant active:scale-95 transition-transform w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="local_shipping">local_shipping</span>
+<span class="font-data-label text-data-label">Deliveries</span>
+</a>
+</nav>
+</body></html>

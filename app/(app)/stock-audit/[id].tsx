@@ -53,7 +53,7 @@ const LineRow = React.memo(
       <PressScale
         onPress={() => editable && onOpen(item)}
         disabled={!editable}
-        className="h-[76px] mb-2 mx-4 bg-white rounded-2xl border border-gray-100 px-3 py-2.5 flex-row items-center gap-2"
+        className="h-[76px] mb-2 mx-4 bg-white rounded-lg border border-gray-100 px-3 py-2.5 flex-row items-center gap-2"
       >
         <View className="flex-1 min-w-0">
           <Text className="text-[13.5px] font-bold text-gray-900" numberOfLines={1}>
@@ -295,7 +295,7 @@ export default function StockCountDetailScreen() {
                   autoFocus
                   placeholder="e.g. Recount aisle A"
                   placeholderTextColor={NEUTRAL[400]}
-                  className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 mb-3"
+                  className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 mb-3"
                 />
                 <View className="flex-row gap-2">
                   <ActionButton label="Back" variant="secondary" onPress={() => setRejecting(false)} />
@@ -361,7 +361,7 @@ export default function StockCountDetailScreen() {
             </View>
 
             {qty !== editing.systemQty && (
-              <View className={`rounded-xl px-3 py-2 mb-3 ${qty < editing.systemQty ? "bg-red-50" : "bg-amber-50"}`}>
+              <View className={`rounded-lg px-3 py-2 mb-3 ${qty < editing.systemQty ? "bg-red-50" : "bg-amber-50"}`}>
                 <Text className={`text-[12px] font-bold ${qty < editing.systemQty ? "text-red-700" : "text-amber-700"}`}>
                   {qty < editing.systemQty ? `Short by ${editing.systemQty - qty}` : `Over by ${qty - editing.systemQty}`}
                 </Text>
@@ -373,7 +373,7 @@ export default function StockCountDetailScreen() {
               onChangeText={setNote}
               placeholder="Note (optional) — e.g. one on a demo bike"
               placeholderTextColor={NEUTRAL[400]}
-              className="border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white text-gray-800 mb-3"
+              className="border border-gray-200 rounded-lg px-3 py-3 text-sm bg-white text-gray-800 mb-3"
             />
 
             <View className="flex-row gap-2">
