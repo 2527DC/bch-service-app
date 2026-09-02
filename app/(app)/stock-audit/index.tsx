@@ -16,10 +16,14 @@ import { getStartOfTodayIST } from "@/lib/timezone";
 import { NEUTRAL } from "@/lib/theme";
 import { usePagedList } from "@/lib/usePagedList";
 import PagedList, { CountLine } from "@/components/PagedList";
-import { Badge, NoAccess, Pills, ScreenHeader } from "@/components/stock";
+import { Badge, NoAccess, Pills, RecordCard, ScreenHeader } from "@/components/stock";
 import SearchBar from "@/components/SearchBar";
-import PressScale from "@/components/PressScale";
 
+// Card height. RecordCard is px-4 py-3.5 (28 of padding). The text column is the title
+// (14.5px ≈ 20) + meta (mt-0.5 + 11px ≈ 17) + the badge row (mt-1.5 + ≈ 19) = 62, the icon
+// tile is 40 beside it, and the progress bar adds mt-2 + 6 → 104 of 116. `h-[116px]` on
+// the card must be edited together with CARD_H — Tailwind extracts arbitrary values from
+// literal source text, so the class cannot be built from the constant.
 const CARD_H = 116;
 const GAP = 8;
 const ITEM_H = CARD_H + GAP;
@@ -44,9 +48,13 @@ const CountRow = React.memo(
     const pct = c.totalItems ? Math.round((c.countedItems / c.totalItems) * 100) : 0;
 
     return (
-      <PressScale
+      <RecordCard
+        // The accent carries urgency — overdue is red whatever the status; the badge keeps
+        // the status tone, so the two never say different things.
+        accent={overdue ? "red" : cfg.tone}
         onPress={() => onPress(c.id)}
-        className={`h-[116px] mb-2 mx-4 bg-white rounded-lg border px-3 py-3 ${overdue ? "border-red-200" : "border-gray-100"}`}
+        className="h-[116px] mb-2 mx-4"
+        accessibilityLabel={`${c.title}, ${cfg.label}, ${c.countedItems} of ${c.totalItems} counted`}
       >
         <View className="flex-row items-start gap-2.5 flex-1">
           <View className={`w-10 h-10 rounded-lg items-center justify-center ${TONE[cfg.tone].bg}`}>
@@ -61,34 +69,43 @@ const CountRow = React.memo(
               {c.productType ? ` · ${c.productType}` : ""}
             </Text>
             <View className="flex-row items-center gap-2 mt-1.5">
-              <Badge label={cfg.label} tone={cfg.tone} small />
+              <Badge label={cfg.label} tone={cfg.tone} />
               {overdue ? (
                 <View className="flex-row items-center gap-1">
                   <AlertTriangle size={11} color={TONE.red.hex} />
-                  <Text className="text-[10.5px] font-bold text-red-600">Due {formatDayMonth(c.dueDate)}</Text>
+                  <Text className={`text-[10.5px] font-bold ${TONE.red.text}`} numberOfLines={1}>
+                    Due {formatDayMonth(c.dueDate)}
+                  </Text>
                 </View>
               ) : (
-                <Text className="text-[10.5px] text-gray-400">
+                <Text className="text-[10.5px] text-gray-400" numberOfLines={1}>
                   {isOpen(c) ? `Due ${formatDayMonth(c.dueDate)}` : c.completedAt ? `Done ${formatDayMonth(c.completedAt)}` : ""}
                 </Text>
               )}
             </View>
           </View>
           <View className="items-end">
-            <Text className="text-sm font-extrabold text-gray-900">
-              {c.countedItems}/{c.totalItems}
+            <Text className="text-sm font-extrabold text-gray-900" numberOfLines={1}>
+              {c.countedItems.toLocaleString("en-IN")}/{c.totalItems.toLocaleString("en-IN")}
             </Text>
-            <Text className="text-[10px] text-gray-400">counted</Text>
+            <Text className="text-[10px] text-gray-400" numberOfLines={1}>
+              counted
+            </Text>
           </View>
           <ChevronRight size={16} color={NEUTRAL[400]} />
         </View>
         <View className="h-1.5 rounded-full bg-gray-100 mt-2 overflow-hidden">
           <View className={`h-full rounded-full ${TONE[cfg.tone].dot}`} style={{ width: `${Math.max(pct, 1)}%` }} />
         </View>
-      </PressScale>
+      </RecordCard>
     );
   },
-  (a, b) => a.c.id === b.c.id && a.c.status === b.c.status && a.c.countedItems === b.c.countedItems
+  (a, b) =>
+    a.c.id === b.c.id &&
+    a.c.status === b.c.status &&
+    a.c.countedItems === b.c.countedItems &&
+    a.c.totalItems === b.c.totalItems &&
+    a.onPress === b.onPress
 );
 
 export default function StockAuditListScreen() {
@@ -140,7 +157,7 @@ export default function StockAuditListScreen() {
   if (!can("stock_audit", "view")) return <NoAccess module="Stock Audit" />;
 
   const header = (
-    <View className="bg-gray-50">
+    <View className="bg-surface">
       <ScreenHeader
         title="Stock Audit"
         subtitleNode={<CountLine shown={list.items.length} total={list.total} noun="counts" />}

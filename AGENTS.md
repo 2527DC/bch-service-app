@@ -122,6 +122,14 @@ every collection — they are what demos show.
 - Status colors, job-type colors, and their emoji are centralized in
   `src/lib/constants.ts` (`JOB_STATUS`, `JOB_TYPE`, `BIKE_CATEGORIES`). Read from
   there — never inline a status color or emoji in a screen.
+- **`className` on Reanimated components.** Never `cssInterop` an `Animated.*` /
+  `createAnimatedComponent(...)` that also receives a `useAnimatedStyle` style. The
+  interop folds the animated handle and the static styles into ONE object; Reanimated
+  sees `viewDescriptors` on it, treats the whole thing as the handle, and applies only
+  its `initial.value` — every class is dropped, silently, while the animation keeps
+  working. Put the `className` on a plain wrapper `View`, or do what `PressScale` does:
+  register the *outer* function component so `className` arrives already resolved as
+  `style`, and hand the animated component `[animStyle, style]`.
 
 ## 5. Icons
 

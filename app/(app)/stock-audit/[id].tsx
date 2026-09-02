@@ -14,16 +14,21 @@ import * as mockApi from "@/services/mockApi";
 import type { CountItemFilter, StockCountSummaryRow } from "@/services/mockApi.stock";
 import type { StockCountItem } from "@/mock/types";
 import { formatDayMonth } from "@/lib/format";
-import { COUNT_STATUS, TONE } from "@/lib/stock-constants";
+import { COUNT_STATUS, TONE, type Tone } from "@/lib/stock-constants";
 import { NEUTRAL } from "@/lib/theme";
 import { usePagedList } from "@/lib/usePagedList";
 import PagedList, { CountLine } from "@/components/PagedList";
-import { ActionButton, Badge, Card, KV, NoAccess, Pills, ScreenHeader, Stepper } from "@/components/stock";
+import { ActionButton, Badge, Card, KV, NoAccess, Pills, RecordCard, ScreenHeader, Stepper } from "@/components/stock";
 import SearchBar from "@/components/SearchBar";
 import PressScale from "@/components/PressScale";
 import BouncingEmoji from "@/components/BouncingEmoji";
 import EmptyState from "@/components/EmptyState";
 
+// Row height. RecordCard is px-4 py-3.5 (28 of padding). The left column is the name line
+// (13.5px ≈ 18) over the SKU line (mt-0.5 + 10.5px ≈ 16) → 62 of 76; each figure column is
+// a 9px label (≈ 12) over a 15px value (≈ 20). Nothing wraps: every Text is capped at one
+// line. `h-[76px]` on the card must be edited together with ROW_H — Tailwind extracts
+// arbitrary values from literal source text, so the class cannot be built from the constant.
 const ROW_H = 76;
 const GAP = 8;
 const ITEM_H = ROW_H + GAP;
@@ -36,6 +41,29 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "COUNTED", label: "Counted" },
 ];
 
+/** The card's accent says what the line says — red = short, amber = over, green = agrees,
+ *  none = not counted yet. The variance figure uses the same tone, so they never disagree. */
+function lineTone(item: StockCountItem): Tone | undefined {
+  if (item.variance === null) return undefined;
+  return item.variance < 0 ? "red" : item.variance > 0 ? "amber" : "green";
+}
+
+/** One of the three figures on a line. Fixed width so the columns line up down the sheet.
+ *  The label is capped to one line: "COUNTED" at the old 9.5px was a hair wider than the
+ *  old 48px column and wrapped to "COUNTE / D" on device. */
+function Figure({ label, value, valueClass }: { label: string; value: string | number; valueClass: string }) {
+  return (
+    <View className="w-[52px] items-center">
+      <Text className="text-[9px] font-bold uppercase text-gray-400" numberOfLines={1}>
+        {label}
+      </Text>
+      <Text className={`text-[15px] font-extrabold mt-px ${valueClass}`} numberOfLines={1}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 const LineRow = React.memo(
   function LineRow({
     item,
@@ -47,15 +75,17 @@ const LineRow = React.memo(
     onOpen: (item: StockCountItem) => void;
   }) {
     const v = item.variance;
-    const vTone = v === null ? "text-gray-300" : v === 0 ? "text-green-600" : v < 0 ? "text-red-600" : "text-amber-600";
+    const tone = lineTone(item);
 
     return (
-      <PressScale
-        onPress={() => editable && onOpen(item)}
-        disabled={!editable}
-        className="h-[76px] mb-2 mx-4 bg-white rounded-lg border border-gray-100 px-3 py-2.5 flex-row items-center gap-2"
+      <RecordCard
+        accent={tone}
+        // A locked sheet renders a plain View, not an inert Pressable that swallows touches.
+        onPress={editable ? () => onOpen(item) : undefined}
+        className="h-[76px] mb-2 mx-4 flex-row items-center gap-1.5"
+        accessibilityLabel={`${item.product.name}, system ${item.systemQty}, counted ${item.countedQty ?? "not yet"}`}
       >
-        <View className="flex-1 min-w-0">
+        <View className="flex-1 min-w-0 mr-1">
           <Text className="text-[13.5px] font-bold text-gray-900" numberOfLines={1}>
             {item.product.name}
           </Text>
@@ -64,28 +94,27 @@ const LineRow = React.memo(
             {item.notes ? ` · ${item.notes}` : ""}
           </Text>
         </View>
-        <View className="items-center w-12">
-          <Text className="text-[9.5px] text-gray-400 font-semibold">SYSTEM</Text>
-          <Text className="text-[15px] font-bold text-gray-600">{item.systemQty}</Text>
-        </View>
-        <View className="items-center w-12">
-          <Text className="text-[9.5px] text-gray-400 font-semibold">COUNTED</Text>
-          <Text className={`text-[15px] font-extrabold ${item.countedQty === null ? "text-gray-300" : "text-gray-900"}`}>
-            {item.countedQty ?? "—"}
-          </Text>
-        </View>
-        <View className="items-center w-11">
-          <Text className="text-[9.5px] text-gray-400 font-semibold">VAR</Text>
-          <Text className={`text-[15px] font-extrabold ${vTone}`}>{v === null ? "—" : v > 0 ? `+${v}` : v}</Text>
-        </View>
-      </PressScale>
+        <Figure label="System" value={item.systemQty} valueClass="text-gray-600" />
+        <Figure
+          label="Counted"
+          value={item.countedQty ?? "—"}
+          valueClass={item.countedQty === null ? "text-gray-300" : "text-gray-900"}
+        />
+        <Figure
+          label="Var"
+          value={v === null ? "—" : v > 0 ? `+${v}` : v}
+          valueClass={tone ? TONE[tone].text : "text-gray-300"}
+        />
+      </RecordCard>
     );
   },
   (a, b) =>
     a.item.id === b.item.id &&
     a.item.countedQty === b.item.countedQty &&
+    a.item.systemQty === b.item.systemQty &&
     a.item.notes === b.item.notes &&
-    a.editable === b.editable
+    a.editable === b.editable &&
+    a.onOpen === b.onOpen
 );
 
 export default function StockCountDetailScreen() {
@@ -238,7 +267,7 @@ export default function StockCountDetailScreen() {
 
   if (!count) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-surface">
         <ScreenHeader title="Stock count" />
         {headerError ? <EmptyState emoji="🤷" message={headerError} /> : (
           <View className="py-16 items-center">
@@ -253,7 +282,7 @@ export default function StockCountDetailScreen() {
   const pct = count.totalItems ? Math.round((count.countedItems / count.totalItems) * 100) : 0;
 
   const header = (
-    <View className="bg-gray-50">
+    <View className="bg-surface">
       <ScreenHeader title={count.title} subtitle={count.countNo ?? undefined} right={<Badge label={cfg.label} tone={cfg.tone} />} />
 
       <View className="px-4">
@@ -318,7 +347,7 @@ export default function StockCountDetailScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-surface">
       <PagedList
         data={list.items}
         renderItem={renderItem}

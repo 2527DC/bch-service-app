@@ -24,19 +24,29 @@ import { useStock } from "@/store/stock";
 import { stockChildren, STOCK_MANAGEMENT_KEY } from "@/lib/modules";
 import { TONE, type Tone } from "@/lib/stock-constants";
 import { NEUTRAL } from "@/lib/theme";
-import { Card, NoAccess, ScreenHeader } from "@/components/stock";
+import { Card, NoAccess, RecordCard, ScreenHeader, StatGrid } from "@/components/stock";
 import PressScale from "@/components/PressScale";
 import ErrorBanner from "@/components/ErrorBanner";
 import BouncingEmoji from "@/components/BouncingEmoji";
 
 const ICONS: Record<string, LucideIcon> = { Package, Tag, ClipboardCheck, ArrowDownCircle, Truck, ArrowRightLeft };
 
+/** A hub counter. Sits three-up in a StatGrid, so the label may take two lines
+ *  ("Transfers to review") and the tile carries a min height so both rows stay level. */
 function Kpi({ label, value, tone, onPress }: { label: string; value: number; tone: Tone; onPress?: () => void }) {
   const t = TONE[tone];
   return (
-    <PressScale onPress={onPress} disabled={!onPress} className={`flex-1 min-w-[30%] rounded-lg border p-3 ${t.bg} ${t.border}`}>
-      <Text className={`text-2xl font-extrabold ${t.text}`}>{value.toLocaleString("en-IN")}</Text>
-      <Text className="text-[11px] font-semibold text-gray-500 mt-0.5" numberOfLines={1}>
+    <PressScale
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityLabel={`${label}, ${value.toLocaleString("en-IN")}`}
+      className={`flex-1 min-h-[88px] rounded-lg border p-3 ${t.bg} ${t.border}`}
+    >
+      <Text className={`text-2xl font-extrabold ${t.text}`} numberOfLines={1}>
+        {value.toLocaleString("en-IN")}
+      </Text>
+      <Text className="text-[11px] leading-[14px] font-semibold text-gray-500 mt-0.5" numberOfLines={2}>
         {label}
       </Text>
     </PressScale>
@@ -80,7 +90,7 @@ export default function StockManagementHub() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-surface"
       contentContainerStyle={{ paddingBottom: 32 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
     >
@@ -103,16 +113,18 @@ export default function StockManagementHub() {
         </View>
       ) : (
         <>
-          {/* KPI strip — one glance at what needs a person today */}
+          {/* KPI strip — one glance at what needs a person today. StatGrid chunks the six
+              into two explicit rows of three; flex-1 inside a wrapping row sizes the second
+              row against different remaining space and the tiles come out uneven. */}
           <View className="px-4 pt-1">
-            <View className="flex-row flex-wrap gap-2">
+            <StatGrid columns={3}>
               <Kpi label="Active SKUs" value={activeCount} tone="blue" onPress={can("stock") ? () => go("/stock") : undefined} />
               <Kpi label="Low stock" value={low} tone="amber" onPress={can("stock") ? () => go("/stock?filter=LOW_STOCK") : undefined} />
               <Kpi label="Out of stock" value={out} tone="red" onPress={can("stock") ? () => go("/stock?filter=NO_STOCK") : undefined} />
               <Kpi label="Transfers to review" value={pendingTransfers} tone="purple" onPress={can("transfers") ? () => go("/transfers") : undefined} />
               <Kpi label="Inbound in transit" value={inTransit} tone="orange" onPress={can("inbound") ? () => go("/inbound") : undefined} />
               <Kpi label="Deliveries today" value={todayRuns} tone="green" onPress={can("deliveries") ? () => go("/deliveries") : undefined} />
-            </View>
+            </StatGrid>
             {openCounts > 0 && can("stock_audit") && (
               <PressScale onPress={() => go("/stock-audit")} className="mt-2 flex-row items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
                 <ClipboardCheck size={16} color={TONE.amber.hex} />
@@ -139,18 +151,25 @@ export default function StockManagementHub() {
               children.map((m) => {
                 const Icon = ICONS[m.icon] ?? Package;
                 return (
-                  <PressScale key={m.key} onPress={() => go(m.route!)} className="bg-white rounded-lg border border-gray-100 p-3.5 flex-row items-center gap-3 min-h-[64px]">
+                  <RecordCard
+                    key={m.key}
+                    onPress={() => go(m.route!)}
+                    className="flex-row items-center gap-3 min-h-[72px]"
+                    accessibilityLabel={m.label}
+                  >
                     <View className="w-11 h-11 rounded-lg bg-gray-100 items-center justify-center">
                       <Icon size={20} color={NEUTRAL[800]} />
                     </View>
-                    <View className="flex-1">
-                      <Text className="text-[15px] font-bold text-gray-900">{m.label}</Text>
+                    <View className="flex-1 min-w-0">
+                      <Text className="text-[15px] font-bold text-gray-900" numberOfLines={1}>
+                        {m.label}
+                      </Text>
                       <Text className="text-[11px] text-gray-400 mt-0.5" numberOfLines={1}>
                         {m.description}
                       </Text>
                     </View>
                     <ChevronRight size={18} color={NEUTRAL[400]} />
-                  </PressScale>
+                  </RecordCard>
                 );
               })
             )}

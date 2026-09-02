@@ -840,3 +840,44 @@ counters costs nothing measurable. Do that rather than inventing a second endpoi
 
 **Do not source these from `PageResult.facets`.** Facets are scoped to the current search,
 so the tiles would change as someone types. The design's tiles read as global counters.
+
+## 13.10 Device pass 1 (2026-09-02) — every card was flat; one root cause
+
+Screenshots in `doc/implementation/pending/asset/` (iPhone, MANAGER). Stock cards, Delivery
+cards, Inbound cards, the hub's KPI tiles and section rows, the active filter chip, the
+Filter button and the count sheet's rows all rendered with no background, border, padding,
+height or flex-direction. Rows overflowed their `itemHeight` and painted over each other.
+
+**Root cause — `src/components/PressScale.tsx`, not the screens.** Every broken element is
+a `PressScale`; every plain `View` was fine. `8cc503a` registered BOTH `PressScale` and its
+inner `Animated.createAnimatedComponent(Pressable)` with `cssInterop`. The inner interop
+wrapper folds the inline `style` array `[animStyle, staticStyle]` into one object
+(`assignToTarget` → `Object.assign`), so Reanimated's animated handle — which carries
+`viewDescriptors` — is spread together with the resolved classes. Reanimated's
+`PropsFilter` identifies an animated style by `viewDescriptors`, treats the merged object
+as the handle and applies only `initial.value` (the scale transform). Every static style is
+discarded. The press animation kept working, which is why it read as a layout bug.
+
+**Fix.** Only the outer `PressScale` is registered. `className` arrives already resolved as
+`style`; the animated Pressable receives `[animStyle, style]` un-wrapped, the array shape
+Reanimated expects. The rule is recorded in AGENTS.md §4.
+
+**Alignment fixes in the same pass**
+
+- Count sheet rows (`stock-audit/[id].tsx`) → `RecordCard`, accent by variance (red short,
+  amber over, green agrees). The three figure columns are 52px with one-line labels:
+  "COUNTED" at 9.5px was wider than the old 48px column and wrapped to "COUNTE / D" even
+  where the row's own styles applied. A locked sheet renders a plain View, not a disabled
+  Pressable.
+- Count list rows (`stock-audit/index.tsx`) → `RecordCard`; overdue is the red accent, not a
+  red border. Full-size badge — the 116px card has the room.
+- Hub (`stock-management/index.tsx`): KPI strip on `StatGrid columns={3}` instead of
+  `flex-wrap`, labels may take two lines with a tile min-height so the rows stay level;
+  section rows on `RecordCard`; ground is `surface` like the listing screens.
+- `stock-audit` headers on `surface` — they sat on `gray-50` above a `surface` list.
+
+**Same bug, not touched (outside D4):** `src/components/job/DueBadge.tsx` puts a
+`className` on `Animated.View`, which is not registered with the interop at all, so the
+overdue banner's red fill never applies. Move the className to a wrapping `View`.
+
+**Still needs a device:** the fling test and the four-state pass from §13.9 are unchanged.
